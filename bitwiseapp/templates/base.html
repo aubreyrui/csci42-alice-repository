@@ -5,20 +5,35 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <!-- {% block styles %}{% endblock %} -->
 </head>
 <body>
     <header>
-        <nav></nav>
         {% if request.user.is_authenticated %}
-            <div>
-                <p>Hello, <a href="{% url 'user_management:profile_update' request.user.profile.pk %}">{{ request.user.profile.display_name }}</a></p>
-                <form action="{% url 'logout'%}" method="POST">
-                    {% csrf_token %}
-                    <button type="submit">LOG OUT</button>
-                </form>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-1 text-center">
+                    <nav class="navbar navbar-expand-lg bg-secondary">
+                        <ul class="navbar-nav mr-auto">
+                            <li class="nav-item mx-5"><a class="nav-link active" aria-current="page" href="#bio">A</a></li>
+                            <li class="nav-item mx-5"><a class="nav-link" href="#exp">B</a></li>
+                            <li class="nav-item mx-5"><a class="nav-link" href="#con">C</a></li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="col-11 mt-3">
+                    <div class="container">
+                        <h1>Welcome to Bitwise, <a href="{% url 'accounts:profile_update' request.user.profile.pk %}">{{ request.user.profile.display_name }}</a>!</h1>
+                        <form action="{% url 'logout'%}" method="POST">
+                            {% csrf_token %}
+                            <button type="submit">LOG OUT</button>
+                        </form>
+                    </div>
+                </div>
             </div>
+        </div>
         {% else %}
             <a href="{% url 'login' %}">LOGIN</a>
         {% endif %}
@@ -27,5 +42,6 @@
         {% block main %}{% endblock %}
     </div>
     {% block scripts %}{% endblock %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>
