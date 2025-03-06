@@ -21,3 +21,17 @@
         height: 100vh;
     }
   }
+
+.bi:hover{
+    animation: bi-hover 0.3s both;
+}
+
+@keyframes bi-hover{
+    100%{
+      color: whitesmoke;
+    }
+  }
+
+.bi-person-circle {
+    color: #943E3E;
+}
