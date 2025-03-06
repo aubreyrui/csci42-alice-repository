@@ -1,12 +1,30 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>{% block title %}My amazing site{% endblock %}</title>
-    {% block styles %}{% endblock %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <!-- {% block styles %}{% endblock %} -->
 </head>
 <body>
+    <header>
+        <nav></nav>
+        {% if request.user.is_authenticated %}
+            <div>
+                <p>Hello, <a href="{% url 'user_management:profile_update' request.user.profile.pk %}">{{ request.user.profile.display_name }}</a></p>
+                <form action="{% url 'logout'%}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit">LOG OUT</button>
+                </form>
+            </div>
+        {% else %}
+            <a href="{% url 'login' %}">LOGIN</a>
+        {% endif %}
+    </header>
     <div id="content">
-        {% block content %}{% endblock %}
+        {% block main %}{% endblock %}
     </div>
     {% block scripts %}{% endblock %}
 </body>

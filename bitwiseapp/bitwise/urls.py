@@ -1,9 +1,8 @@
 from django.urls import path
-
-from .views import index
+from .views import HomepageView
 
 urlpatterns = [
-    path("index", index, name="index"),
+    path("", HomepageView.as_view(), name="index"),
 ]
 
 app_name = "bitwise"

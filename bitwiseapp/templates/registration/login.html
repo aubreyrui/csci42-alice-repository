@@ -1,18 +1,25 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
-  <head> </head>
+<html lang="en">
+  <head>
+    <title>{% block title %}My amazing site{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+  </head>
   <body>
-    <h1>Login</h1>
-    <hr />
-    <a href="{% url 'password_reset' %}">Reset password</a>
-    <form method="POST">
-      {% csrf_token %} {{ form.as_p }}
-      <button type="submit">LOG IN</button>
-    </form>
-    <br>
-    <a href="{% url 'user_management:profile_create' %}">Create an account</a>
-    <br>
-    <a href="{% url 'homepage:homepage' %}">Go to homepage</a>
+    <header> </header>
+
+    <div class="main-login">
+      <h1>LOGIN</h1>
+      <form method="POST">
+        {% csrf_token %} {{ form.as_p }}
+        <button type="submit">Login</button>
+      </form>
+    </div>
+    <footer class="login-alters">
+      <a href="{% url 'password_reset' %}">Reset password</a>
+      <a href="{% url 'profile:profile_create' %}">Create an account</a>
+      <a href="{% url 'bitwise:index' %}">Go to homepage</a>
+    </footer>
   </body>
 </html>
 
