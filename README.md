@@ -6,3 +6,4 @@
 ### Things in env folder
 - Django: ``pip install Django``
 - dotenv: ``pip install python-dotenv``
+- Pillow: ``python -m pip install Pillow``

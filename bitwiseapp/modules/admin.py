@@ -24,13 +24,13 @@ class ModuleAdmin(admin.ModelAdmin):
     model = Module
     inline = [CommentInline, GalleryInline]
 
-    search_fields = ["title",]
+    search_fields = ["module",]
 
-    list_display = ["category", "title", "updatedOn"]
+    list_display = ["category", "module", "updatedOn"]
     list_filter = ["category"]
 
     fieldsets = [("Details", {
-        "fields": [("category", "title"), "entry"]
+        "fields": [("category", "module"), "entry"]
     })]
 
 class GalleryAdmin(admin.ModelAdmin):
@@ -39,7 +39,7 @@ class GalleryAdmin(admin.ModelAdmin):
 class CommentAdmin(admin.ModelAdmin):
     model = Comment
 
-    list_display = ["article", "author"]
+    list_display = ["module", "author"]
 
 admin.site.register(Module, ModuleAdmin)
 admin.site.register(ModuleCategory, CategoryAdmin)

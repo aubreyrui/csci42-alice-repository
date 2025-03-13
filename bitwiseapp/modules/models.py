@@ -18,7 +18,14 @@ class ModuleCategory(models.Model):
 class Module(models.Model):
     module = models.CharField(max_length=255)
     entry = models.TextField()
+    author = models.ForeignKey(
+        Profile, null=True,
+        default=None,
+        on_delete=models.SET_NULL,
+        related_name="module",
+    )
     createdOn = models.DateTimeField(auto_now_add=True, null=True)
+    updatedOn = models.DateTimeField(auto_now=True, null=True)
     category = models.ForeignKey(
         "ModuleCategory", on_delete=models.SET_NULL, related_name="modules", null=True
     )
