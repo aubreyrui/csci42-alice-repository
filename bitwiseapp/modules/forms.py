@@ -6,7 +6,7 @@ from .models import Module, Comment, Gallery
 class ModuleForm(forms.ModelForm):
     class Meta:
         model = Module
-        fields = ["module", "entry", "category", ]
+        fields = ["title", "entry", "category", ]
 
 class CommentForm(forms.ModelForm):
     class Meta:
