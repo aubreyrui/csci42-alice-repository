@@ -1,15 +1,17 @@
 {% extends "base.html" %}
 
 {% block title %}
-Hobby Site | Create Profile
+Bitwise | Create Profile
 {% endblock title %}
 
 {% block main %}
-<h1>Profile Information</h1>
-<hr />
-<form method="POST">
-  {% csrf_token %} {{ form }}
-  <input type="submit" value="Create Profile" />
-</form>
-<a href="{% url 'bitwise:index' %}">Go to homepage</a>
+<div class="container my-2">
+  <h1>Profile Information</h1>
+  <hr />
+  <form method="POST">
+    {% csrf_token %} {{ form }}
+    <input type="submit" value="Create Profile" />
+  </form>
+  <a href="{% url 'bitwise:index' %}">Go to homepage</a>
+</div>
 {% endblock main %}

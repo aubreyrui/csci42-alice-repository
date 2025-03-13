@@ -11,36 +11,6 @@
     <!-- {% block styles %}{% endblock %} -->
 </head>
 <body>
-    <header>
-        {% if request.user.is_authenticated %}
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-1 text-center">
-                    <nav class="navbar navbar-expand-lg bg-secondary">
-                        <ul class="navbar-nav mr-auto">
-                            <li class="nav-item mx-5"><i class="bi bi-person-circle fs-1"></i></li>
-                            <li class="nav-item mx-5"><a class="nav-link active" aria-current="page" href="#bio"><i class="bi bi-star fs-1"></i></a></li>
-                            <li class="nav-item mx-5"><a class="nav-link" href="#exp"><i class="bi bi-file-binary fs-1"></i></a></li>
-                            <li class="nav-item mx-5"><a class="nav-link" href="#con"><i class="bi bi-people fs-1"></i></a></li>
-                            <li class="nav-item mx-5"><a class="nav-link" href="#con"><i class="bi bi-inbox fs-1"></i></i></a></li>
-                        </ul>
-                    </nav>
-                </div>
-                <div class="col-11 mt-3">
-                    <div class="container">
-                        <h1>Welcome to Bitwise, <a href="{% url 'accounts:profile_update' request.user.profile.pk %}">{{ request.user.profile.display_name }}</a>!</h1>
-                        <form action="{% url 'logout'%}" method="POST">
-                            {% csrf_token %}
-                            <button type="submit">LOG OUT</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% else %}
-            <a href="{% url 'login' %}">LOGIN</a>
-        {% endif %}
-    </header>
     <div id="content">
         {% block main %}{% endblock %}
     </div>
