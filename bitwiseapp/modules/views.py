@@ -11,7 +11,7 @@ from accounts.models import Profile
 
 class CategoryListView(ListView):
     model = ModuleCategory
-    template_name = "modules_list.html"
+    template_name = "modules/modules_list.html"
 
 def ModuleDetailView(request, pk):
     module = Module.objects.get(pk=pk)
@@ -33,6 +33,7 @@ def ModuleDetailView(request, pk):
         "allModules": Module.objects.all(),
         "comments": Comment.objects.all(),
     }
+
     return render(request, "modules_module.html", ctx)
 
 @login_required
@@ -43,7 +44,7 @@ def ModuleCreateView(request):
         form = ModuleForm(request.POST, request.FILES)
         if form.is_valid():
             module = Module()
-            module.module = form.cleaned_data.get("module")
+            module.title = form.cleaned_data.get("title")
             module.category = form.cleaned_data.get("category")
             module.author = Profile.objects.get(user=request.user)
             module.entry = form.cleaned_data.get("entry")
@@ -55,8 +56,8 @@ def ModuleCreateView(request):
 
 class ModuleUpdateView(UpdateView):
     model = Module
-    fields = ["module", "category", "entry",]
-    template_name = "modules_modUpdate.html"
+    fields = ["title", "category", "entry",]
+    template_name = "modules/modules_modUpdate.html"
 
     def get_success_url(self):
         return reverse_lazy("modules:Module",
@@ -66,7 +67,7 @@ class ModuleUpdateView(UpdateView):
     
 class GalleryCreateView(LoginRequiredMixin, CreateView):
     model = Gallery
-    template_name = "modules_addGallery.html"
+    template_name = "modules/modules_addGallery.html"
     def get_success_url(self):
         return reverse_lazy("modules:Module",
             kwargs={

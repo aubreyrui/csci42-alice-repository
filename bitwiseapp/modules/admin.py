@@ -24,13 +24,13 @@ class ModuleAdmin(admin.ModelAdmin):
     model = Module
     inline = [CommentInline, GalleryInline]
 
-    search_fields = ["module",]
+    search_fields = ["title",]
 
-    list_display = ["category", "module", "updatedOn"]
+    list_display = ["category", "title", "updatedOn"]
     list_filter = ["category"]
 
     fieldsets = [("Details", {
-        "fields": [("category", "module"), "entry"]
+        "fields": [("category", "title"), "entry"]
     })]
 
 class GalleryAdmin(admin.ModelAdmin):

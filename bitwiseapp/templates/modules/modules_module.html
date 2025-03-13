@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}{{ module.title }}{% endblock %}
+{% block content %}
+
+{% if request.user.is_authenticated %}
+    <form action="{% url 'logout' %}" method="POST">
+        {% csrf_token %}
+        <button type="submit">LOG OUT</button>
+    </form>
+    <br><br>
+{% else %}
+    <div class="login">
+        <h2>Have an account?</h2>
+        <a href="{% url 'login' %}">LOGIN</a>
+    </div>
+{% endif %}
+<br><br>
+
+<h2>{{ object.title }}</h2>
+
+<small><strong>By {{ object.author }}</strong></small><br>
+<small>Published on <strong>{{ object.created_on }}</strong> | Last edited on <strong>{{ object.updated_on }}</strong></small><br>
+
+<hr>
+
+{% if object.header %}
+    <img src="{{ object.header.url }}" class="img-fluid">
+{% endif %}
+
+<p class="mt-4 mb-5">{{ object.entry }}</p>
+
+<h3>More from the author:</h3>
+        {% for module in allModules %}
+            {% if module.author == object.author %}
+                <ul>
+                    <li>
+                        <a href="{{ module.get_absolute_url }}">
+                            {{ module.title }} in {{ module.category }}
+                        </a>
+                    </li>
+                </ul>
+            {% endif %}
+        {% endfor %}
+
+<hr>
+
+<h5>Comments</h5>
+
+{% if request.user.is_authenticated %}
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_div }}
+        <button>Submit</button>
+    </form>
+{% endif %}
+
+<ul class="list-group list-group-flush mt-4">
+{% for comment in comments %}
+    <li class="list-group-item">
+        {% if comment.module == object %} 
+            <p class="mb-0"><strong>{{ comment.author }}</strong></p>
+            <small class="text-secondary">Commented {{ comment.created_on }} at {{ comment.created_on }} | Edited {{ comment.updated_on }} at {{ comment.updated_on }}</small>
+            <p>{{ comment.entry }}</p>
+        {% endif %} 
+    </li>
+{% endfor %}
+</ul>
+
+{% if not request.user.is_authenticated %}
+
+    <form method="POST" action="{% url 'login' %}">
+        {% csrf_token %}
+        <button type="submit">LOG IN</button>
+    </form>
+
+{% endif %}
+{% endblock %}

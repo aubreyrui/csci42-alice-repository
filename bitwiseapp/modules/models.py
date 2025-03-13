@@ -16,7 +16,7 @@ class ModuleCategory(models.Model):
 
 
 class Module(models.Model):
-    module = models.CharField(max_length=255)
+    title = models.CharField(max_length=255)
     entry = models.TextField()
     author = models.ForeignKey(
         Profile, null=True,
@@ -38,8 +38,8 @@ class Module(models.Model):
     
     class Meta:
         unique_together = [
-            ["module", "createdOn"],
-            ["module", "entry"]
+            ["title", "createdOn"],
+            ["title", "entry"]
         ]
         verbose_name = "Module"
         verbose_name_plural = "Modules"
