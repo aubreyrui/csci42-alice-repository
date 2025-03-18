@@ -5,7 +5,6 @@ from django.views.generic.edit import UpdateView, CreateView
 from django.shortcuts import render
 from accounts.forms import ProfileCreationForm
 from .models import Profile
-from django.contrib.auth.forms import UserCreationForm
 
 
 class ProfileUpdateView(UpdateView):
