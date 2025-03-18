@@ -34,25 +34,28 @@ def ModuleDetailView(request, pk):
         "comments": Comment.objects.all(),
     }
 
-    return render(request, "modules_module.html", ctx)
+    return render(request, "modules/modules_module.html", ctx)
 
 @login_required
 def ModuleCreateView(request):
     form = ModuleForm()
 
-    if request.method == "POST":
-        form = ModuleForm(request.POST, request.FILES)
-        if form.is_valid():
-            module = Module()
-            module.title = form.cleaned_data.get("title")
-            module.category = form.cleaned_data.get("category")
-            module.author = Profile.objects.get(user=request.user)
-            module.entry = form.cleaned_data.get("entry")
-            module.save()
-            return redirect("modules:Module", pk=module.pk)
+    if request.user.profile.authorized:
+        if request.method == "POST":
+            form = ModuleForm(request.POST, request.FILES)
+            if form.is_valid():
+                module = Module()
+                module.title = form.cleaned_data.get("title")
+                module.category = form.cleaned_data.get("category")
+                module.author = Profile.objects.get(user=request.user)
+                module.entry = form.cleaned_data.get("entry")
+                module.save()
+                return redirect("modules:Module", pk=module.pk)
 
-    ctx = {"form": form}
-    return render(request, "modules_modCreate.html", ctx)
+        ctx = {"form": form}
+        return render(request, "modules/modules_modCreate.html", ctx)
+    else:
+        return redirect("bitwise:Index")
 
 class ModuleUpdateView(UpdateView):
     model = Module

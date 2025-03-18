@@ -1,31 +1,15 @@
 {% extends 'base.html' %}
-{% block title %}{{ module.title }}{% endblock %}
-{% block content %}
+{% block title %}{{ object.title }}{% endblock %}
+{% block main %}
 
-{% if request.user.is_authenticated %}
-    <form action="{% url 'logout' %}" method="POST">
-        {% csrf_token %}
-        <button type="submit">LOG OUT</button>
-    </form>
-    <br><br>
-{% else %}
-    <div class="login">
-        <h2>Have an account?</h2>
-        <a href="{% url 'login' %}">LOGIN</a>
-    </div>
-{% endif %}
-<br><br>
+<a href="{% url 'bitwise:index' %}">Return to HomePage</a>
 
 <h2>{{ object.title }}</h2>
 
 <small><strong>By {{ object.author }}</strong></small><br>
-<small>Published on <strong>{{ object.created_on }}</strong> | Last edited on <strong>{{ object.updated_on }}</strong></small><br>
+<small>Published on <strong>{{ object.createdOn }}</strong> | Last edited on <strong>{{ object.updatedOn }}</strong></small><br>
 
 <hr>
-
-{% if object.header %}
-    <img src="{{ object.header.url }}" class="img-fluid">
-{% endif %}
 
 <p class="mt-4 mb-5">{{ object.entry }}</p>
 
@@ -57,9 +41,9 @@
 <ul class="list-group list-group-flush mt-4">
 {% for comment in comments %}
     <li class="list-group-item">
-        {% if comment.module == object %} 
+        {% if comment.module == object %}
             <p class="mb-0"><strong>{{ comment.author }}</strong></p>
-            <small class="text-secondary">Commented {{ comment.created_on }} at {{ comment.created_on }} | Edited {{ comment.updated_on }} at {{ comment.updated_on }}</small>
+            <small class="text-secondary">Commented at {{ comment.createdOn }} | Edited at {{ comment.updatedOn }}</small>
             <p>{{ comment.entry }}</p>
         {% endif %} 
     </li>

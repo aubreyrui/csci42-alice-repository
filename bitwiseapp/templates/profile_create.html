@@ -1,8 +1,13 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}
 Bitwise | Create Profile
 {% endblock title %}
+
+{% block scripts %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
+{% endblock %}
 
 {% block main %}
 <div class="container my-2">

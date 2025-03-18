@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Create Module{% endblock title %} 
 {% block main %} 
-    {% if request.user.is_authenticated %} 
+    {% if request.user.profile.authorized %} 
         <head>
             <h1>Create Blog Article</h1>
         </head>
@@ -12,5 +12,6 @@
                 <input type="submit" value="Submit">
             </form>
         </body>
+    
     {% endif %}
 {% endblock main %} 

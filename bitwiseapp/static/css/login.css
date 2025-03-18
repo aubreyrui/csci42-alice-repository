@@ -20,33 +20,29 @@ body {
 }
 
 header {
-    /* flex-basis: 100%; */
     top: 0;
     background-color: #D9D9D9;
     width: 100%;
     height: 4rem;
 }
 
-/* .main-login {
-    margin-top: 250px;
-    flex-basis: 50%;
-    text-align: center;
-} */
-
 h1 {
-    /* flex-basis: 100%; */
     font-family: 'K2D';
     font-size: 5rem;
 }
 
 button {
-    /* flex-basis: 100%; */
     background-color: #D9D9D9;
     font-family: 'Laila';
 }
 
+a {
+    color: #444;
+    font-family: 'Laila';
+    font-style: italic;
+}
+
 .login-alters {
-    /* flex-basis: 100%; */
     display: flex;
     padding: 1.5rem;
     width: 100%;
@@ -55,8 +51,3 @@ button {
     bottom: 0;
 }
 
-a {
-    color: #444;
-    font-family: 'Laila';
-    font-style: italic;
-}

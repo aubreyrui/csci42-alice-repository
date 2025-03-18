@@ -1,7 +1,19 @@
 {% extends 'base.html' %}
-{% block title %}Modules{% endblock %}
+{% block title %}Bitwise | Module List{% endblock %}
 {% block main %}
-
-
-
-{% endblock main %}
+    {% for category in object_list %}
+        <h2>{{ category.name }}</h2>
+        <ul>
+            {% for lesson in category.modules.all() %}
+                <li>
+                    <a href="{{ lesson.get_absolute_url }}">
+                        {{ lesson.title }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+{% endblock  %}
+{% block scripts %}
+<link rel="stylesheet" href="{% static 'css/modList.css' %}">
+{% endblock %}
