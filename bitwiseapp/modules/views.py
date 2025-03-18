@@ -40,22 +40,19 @@ def ModuleDetailView(request, pk):
 def ModuleCreateView(request):
     form = ModuleForm()
 
-    if request.user.profile.authorized:
-        if request.method == "POST":
-            form = ModuleForm(request.POST, request.FILES)
-            if form.is_valid():
-                module = Module()
-                module.title = form.cleaned_data.get("title")
-                module.category = form.cleaned_data.get("category")
-                module.author = Profile.objects.get(user=request.user)
-                module.entry = form.cleaned_data.get("entry")
-                module.save()
-                return redirect("modules:Module", pk=module.pk)
+    if request.method == "POST":
+        form = ModuleForm(request.POST, request.FILES)
+        if form.is_valid():
+            module = Module()
+            module.title = form.cleaned_data.get("title")
+            module.category = form.cleaned_data.get("category")
+            module.author = Profile.objects.get(user=request.user)
+            module.entry = form.cleaned_data.get("entry")
+            module.save()
+            return redirect("modules:Module", pk=module.pk)
 
-        ctx = {"form": form}
-        return render(request, "modules/modules_modCreate.html", ctx)
-    else:
-        return redirect("bitwise:Index")
+    ctx = {"form": form}
+    return render(request, "modules/modules_modCreate.html", ctx)
 
 class ModuleUpdateView(UpdateView):
     model = Module
