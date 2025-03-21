@@ -3,7 +3,7 @@
 {% block main %} 
     {% if request.user.profile.authorized %} 
         <head>
-            <h1>Create Blog Article</h1>
+            <h1>Module Maker</h1>
         </head>
         <body>
             <form method="POST" enctype="multipart/form-data">
@@ -12,6 +12,5 @@
                 <input type="submit" value="Submit">
             </form>
         </body>
-    
     {% endif %}
 {% endblock main %} 

@@ -2,30 +2,35 @@
 {% block title %}{{ object.title }}{% endblock %}
 {% block main %}
 
-<a href="{% url 'bitwise:index' %}">Return to HomePage</a>
+<a class="btn btn-secondary mb-4 text-end" href="{% url 'bitwise:index' %}">Back to Home</a>
 
-<h2>{{ object.title }}</h2>
-
-<small><strong>By {{ object.author }}</strong></small><br>
-<small>Published on <strong>{{ object.createdOn }}</strong> | Last edited on <strong>{{ object.updatedOn }}</strong></small><br>
+<div class="container">
+<img src="https://picsum.photos/1000/250" style="width: 100%; max-height: 250px;" class="mb-4">
+<h2 class="text-center">{{ object.title }}</h2>
+<p class="text-center text-muted"><i>By {{ object.author }}</i></p>
+<p class="text-center">Published on <strong>{{ object.createdOn }}</strong> | Last edited on <strong>{{ object.updatedOn }}</strong></p>
 
 <hr>
 
 <p class="mt-4 mb-5">{{ object.entry }}</p>
 
 <h3>More from the author:</h3>
+    <div class="card-group">
         {% for module in allModules %}
             {% if module.author == object.author %}
-                <ul>
-                    <li>
-                        <a href="{{ module.get_absolute_url }}">
-                            {{ module.title }} in {{ module.category }}
-                        </a>
-                    </li>
-                </ul>
+                <div class="card">
+                    <img class="card-img-top" src="https://picsum.photos/250" alt="Card image cap" style="max-height: 200px;">
+                    <div class="card-body">
+                        <div class="card-title">
+                            <h3>
+                                <a href="{{ module.get_absolute_url }}">{{ module.title }}</a>
+                            </h3>
+                        </div>
+                    </div>
+                </div>
             {% endif %}
         {% endfor %}
-
+    </div>
 <hr>
 
 <h5>Comments</h5>
@@ -58,4 +63,5 @@
     </form>
 
 {% endif %}
+</div>
 {% endblock %}

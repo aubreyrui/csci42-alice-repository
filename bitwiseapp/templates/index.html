@@ -8,13 +8,7 @@
             {% csrf_token %}
             <button type="submit">LOG OUT</button>
         </form>
-
-        {% if request.user.profile.authorized %}
-            <div>
-                <p> Make a module ! <a href="{% url 'modules:ModuleCreate' %}">HERE</a></p>
-            </div>
-        {% endif %}
     {% else %}
-        <h1>Welcome to Bitwise! Please <a href="{% url 'login' %}">log-in</a> first.</h1>
+        <h1>Welcome to Bitwise! Would you like to <a href="{% url 'login' %}">log-in?</a>?</h1>
     {% endif %}
 {% endblock %}
