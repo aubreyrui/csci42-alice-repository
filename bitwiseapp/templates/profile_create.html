@@ -12,10 +12,12 @@
   <div class="container my-2">
     <h1>Profile Creation</h1>
     <hr />
-    <form method="POST">
-      {% csrf_token %} {{ form }}
-      <input type="submit" value="Create Profile" />
-    </form>
+    <div class="container bg-light border rounded text-center" style = "max-width: 600px;">
+      <form method="POST" class="my-4 mx-2">
+        {% csrf_token %} {{ form }}
+        <input type="submit" value="Create Profile" class="mt-4 btn btn-secondary" />
+      </form>
+    </div>
     <a href="{% url 'bitwise:index' %}">Go to homepage</a>
   </div>
 </body>
