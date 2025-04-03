@@ -1,11 +1,11 @@
+from accounts.forms import ProfileCreationForm
 from django import dispatch
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
-from django.views.generic.edit import UpdateView, CreateView
 from django.shortcuts import render
-from accounts.forms import ProfileCreationForm
+from django.views.generic.edit import CreateView, UpdateView
+
 from .models import Profile
-from django.contrib.auth.forms import UserCreationForm
 
 
 class ProfileUpdateView(UpdateView):
@@ -18,7 +18,7 @@ class ProfileUpdateView(UpdateView):
             return super().dispatch(request, *args, **kwargs)
         else:
             return HttpResponseRedirect("/")
-        
+
 
 class ProfileCreateView(CreateView):
     model = User
@@ -39,7 +39,7 @@ class ProfileCreateView(CreateView):
             user = User.objects.create_user(
                 form.cleaned_data.get("username"),
                 form.cleaned_data.get("email"),
-                form.cleaned_data.get("password1")
+                form.cleaned_data.get("password1"),
             )
             user.save()
             profile = Profile()

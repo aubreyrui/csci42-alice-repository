@@ -14,7 +14,7 @@
 <body>
     <div id="content container-fluid overflow-hidden">
         <div class="row w-100">
-            <div class="col-12 col-sm-2 col-xl-1 px-sm-2 px-0 bg-secondary d-flex sticky-top justify-content-center">
+            <div class="sidebar col-12 col-sm-2 col-xl-1 px-0 bg-secondary d-flex sticky-top justify-content-center" style="padding-left: .5rem !important;">
                 <div class="d-flex flex-sm-column flex-row flex-nowrap bg-secondary align-items-center sticky-top">
                     <ul class="nav nav-pills nav-flush flex-sm-column flex-row flex-nowrap mb-auto mx-auto text-center align-items-center">
                         <li class="nav-item">
@@ -32,7 +32,7 @@
                     </ul> 
                 </div>
             </div>
-            <div class="col-sm-10 p-3 min-vh-100">
+            <div class="col p-3 min-vh-100">
                 {% block main %}
                 {% endblock %}
             </div>
