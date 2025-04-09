@@ -39,12 +39,12 @@ h1 {
 
 button {
     background-color: #D9D9D9;
-    font-family: 'Laila';
+    font-family: 'Roboto';
 }
 
-a {
-    color: #444;
-    font-family: 'Laila';
+.a-log {
+    /* color: #444; */
+    font-family: 'Roboto';
     font-style: italic;
 }
 

@@ -9,3 +9,9 @@ p, .helptext, li {
     font-family: "Roboto" !important;
     font-weight: 300;
 }
+
+.a-log {
+    /* color: #444; */
+    font-family: 'Roboto';
+    font-style: italic;
+}
