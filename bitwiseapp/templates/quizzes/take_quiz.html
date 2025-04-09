@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %} Create Quiz {% endblock title %}
+{% block main %}
+
+
+<form method="post">
+    {% csrf_token %}
+    {% for question in questions %}
+        <div>
+            <h3>{{ question.question_text }}</h3>
+            {% if question.image %}
+                <img src="{{ question.image.url }}" alt="Question Image" style="max-width: 300px;">
+            {% endif %}
+            {% if question.question_type == 'multiple_choice' %}
+                {% for option in question.options.all %}
+                    <input type="radio" name="question_{{ question.id }}" value="{{ option.id }}">
+                    <label for="question_{{ question.id }}">{{ option.text }}</label><br>
+                {% endfor %}
+            {% elif question.question_type == 'essay' %}
+                {% if essay_forms and question.id in essay_forms %}
+                    {{ essay_forms.essay_{{ question.id }}.as_p }}
+                {% else %}
+                    <textarea name="essay_{{ question.id }}" rows="5" cols="80"></textarea>
+                {% endif %}
+            {% endif %}
+        </div>
+    {% endfor %}
+    <button type="submit">Submit Quiz</button>
+</form>
+
+{% endblock %}

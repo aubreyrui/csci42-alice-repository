@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %} Bitwise | Quizzes {% endblock title %}
+{% block main %}
+<h1>Quizzes</h1>
+
+{% if request.user.profile.authorized %}
+    <a class="btn btn-secondary mt-4 text-end" href="{% url 'quizzes:create_quiz' %}">Create a Quiz</a>
+{% endif %}
+
+{% for quiz in quizzes %}
+    <div>
+        <h3><a href="{% url 'take_quiz' quiz.id %}">{{ quiz.title }}</a></h3>
+        {% if quiz.image %}
+            <img src="{{ quiz.image.url }}" alt="Quiz Image" style="max-width: 100px;">
+        {% endif %}
+        <p>{{ quiz.description }}</p>
+        {% if request.user.is_authenticated and quiz.created_by == request.user %}
+            <a href="{% url 'edit_quiz' quiz.id %}">Edit</a>
+        {% endif %}
+    </div>
+{% endfor %}
+
+{% endblock %}
