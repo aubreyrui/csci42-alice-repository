@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "bitwise",
     "modules",
     "accounts",
+    
 ]
 
 MIDDLEWARE = [
