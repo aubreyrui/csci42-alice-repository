@@ -1,15 +1,18 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.forms import inlineformset_factory
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.urls import reverse
 from django.utils import timezone
+from django.views import generic
 from .models import Quiz, Question, MultipleChoiceOption, QuizAttempt, Answer
 from .forms import QuizForm, QuestionForm, EssayQuestionForm, MultipleChoiceOptionForm
+from django.views.generic.list import ListView
 
-def quiz_list(request):
-    quizzes = Quiz.objects.all()
-    return render(request, 'quizzes/quiz_list.html', {'quizzes': quizzes})
+class QuizListView(ListView):
+    model = Quiz
+    template_name = 'quizzes/quiz_list.html'
 
 def take_quiz(request, quiz_id):
     quiz = get_object_or_404(Quiz, pk=quiz_id)
@@ -52,12 +55,12 @@ def quiz_results(request, attempt_id):
 @login_required
 def create_quiz(request):
     if request.method == 'POST':
-        form = QuizForm(request.POST)
+        form = QuizForm(request.POST, request.FILES)
         if form.is_valid():
             quiz = form.save(commit=False)
             quiz.created_by = request.user
             quiz.save()
-            messages.success(request, 'Quiz created successfully!')
+            messages.success(request, 'Quiz created successfully! Now add questions.')
             return redirect('edit_quiz', quiz_id=quiz.id)
     else:
         form = QuizForm()
@@ -78,17 +81,16 @@ def edit_quiz(request, quiz_id):
     )
 
     if request.method == 'POST':
-        quiz_form = QuizForm(request.POST, request.FILES, instance=quiz)  # Handle files
-        question_formset = QuestionFormSet(request.POST, request.FILES, instance=quiz, prefix='questions') # Handle files
-
+        quiz_form = QuizForm(request.POST, request.FILES, instance=quiz)
+        question_formset = QuestionFormSet(request.POST, request.FILES, instance=quiz, prefix='questions')
         mc_option_formset = {}
         for i, question_form in enumerate(question_formset):
             if question_form.instance.question_type == 'multiple_choice':
                 mc_option_formset[question_form.instance.id] = MultipleChoiceOptionFormSet(
-                    request.POST, request.FILES, instance=question_form.instance, prefix=f'options_{question_form.instance.id}' # Handle files
+                    request.POST, request.FILES, instance=question_form.instance, prefix=f'options_{question_form.instance.id}'
                 )
             else:
-                mc_option_formset[question_form.instance.id] = None
+                mc_option_formset[question_form.instance.id] = None # No options for essay
 
         if quiz_form.is_valid() and question_formset.is_valid() and all(fs is None or fs.is_valid() for fs in mc_option_formset.values()):
             quiz_form.save()
@@ -106,7 +108,7 @@ def edit_quiz(request, quiz_id):
             if question.question_type == 'multiple_choice':
                 mc_option_formset[question.id] = MultipleChoiceOptionFormSet(instance=question, prefix=f'options_{question.id}')
             else:
-                mc_option_formset[question.id] = None
+                mc_option_formset[question.id] = None # No options for essay
 
     return render(
         request,
@@ -118,7 +120,7 @@ def edit_quiz(request, quiz_id):
             'quiz': quiz,
         },
     )
-
+        
 @login_required
 def leaderboard(request):
     leaderboard_data = (
