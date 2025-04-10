@@ -5,7 +5,7 @@ from django.urls import reverse
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    display_name = models.CharField(max_length=63)
+    display_name = models.CharField(max_length=63, default="admin")
     authorized = models.BooleanField(default=False)
     email = models.EmailField()
 
