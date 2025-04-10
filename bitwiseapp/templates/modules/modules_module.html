@@ -3,6 +3,9 @@
 {% block main %}
 
 <a class="btn btn-secondary mb-4 text-end" href="{% url 'bitwise:index' %}">Back to Home</a>
+{% if request.user == object.author.user %}
+    <a class="btn btn-secondary mb-4 text-end" href="{% url 'modules:ModuleUpdate' pk=object.pk %}">Update the Module</a>
+{% endif %}
 
 <div class="container">
 <img src="https://picsum.photos/1000/250" style="width: 100%; max-height: 250px;" class="mb-4">

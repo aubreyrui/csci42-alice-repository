@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Update Module{% endblock title %} 
+{% block main %} 
+    {% if request.user.profile.authorized %} 
+        <head>
+            <h1>Module Editor</h1>
+        </head>
+        <body>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_div }}
+                <button /> Submit
+            </form>
+        </body>
+    {% endif %}
+{% endblock main %} 

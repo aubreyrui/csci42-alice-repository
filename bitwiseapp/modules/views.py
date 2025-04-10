@@ -62,7 +62,7 @@ class ModuleUpdateView(UpdateView):
     def get_success_url(self):
         return reverse_lazy("modules:Module",
             kwargs={
-                "pk": self.object.module.pk
+                "pk": self.object.pk
             })
     
 class GalleryCreateView(LoginRequiredMixin, CreateView):
