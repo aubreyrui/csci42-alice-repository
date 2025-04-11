@@ -4,6 +4,10 @@ from django.shortcuts import redirect, render
 from django.views.generic.list import ListView
 from django.views.generic.edit import UpdateView, CreateView
 from django.urls import reverse_lazy
+from django.http import HttpResponse
+import traceback
+from io import StringIO
+from contextlib import redirect_stdout
 
 from .models import ModuleCategory, Module, Comment, Gallery
 from .forms import ModuleForm, CommentForm, GalleryForm
@@ -73,3 +77,27 @@ class GalleryCreateView(LoginRequiredMixin, CreateView):
             kwargs={
                 "pk": self.object.module.pk
             })
+    
+# COMPILER STUFF BELOW THIS POINT
+
+def Execute(code): 
+    try:
+        # Capture standard output in a buffer
+        output_buffer = StringIO()
+        with redirect_stdout(output_buffer):
+            exec(code)
+        output = output_buffer.getvalue()
+    except Exception as e:
+        # Provide detailed error information
+        output = f"Error: {str(e)}\n{traceback.format_exc()}"
+    return output
+
+def Compiler(request):
+    return render(request, "modules/modules_code.html")
+
+def Compile(request): 
+    if request.method == "POST":
+        codeareadata = request.POST['codearea']
+        output = Execute(codeareadata)
+        return render(request, "modules/modules_code.html", {"code": codeareadata, "output": output})
+    return HttpResponse("Method not allowed", status=405)
