@@ -8,8 +8,40 @@
         <body>
             <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
-                {{ form.as_div }}
-                <button /> Submit
+                <div class="row my-3 mx-2">
+                    <div class="col-md-8 border rounded" style="background-color: #D59D46;">
+                        <div class="row my-4">
+                            <div class="container border rounded" style="background-color: #EFD4B7; width: 95%;">
+                                <div class="row text-center">
+                                    <div class="col my-2 d-flex align-items-center">
+                                        {{ form.title.errors }}
+                                        <h2 class="mx-2">{{ form.title.label_tag }}</h2>
+                                        {{ form.title }}
+                                    </div>
+                                    <div class="col my-2 d-flex align-items-center">
+                                        {{ form.category.errors }}
+                                        <h2 class="mx-2">{{ form.category.label_tag }}</h2>
+                                        {{ form.category }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row my-4">
+                            <div class="container border rounded py-3" style="background-color: #EFD4B7; width: 95%;">
+                                {{ form.entry.errors }}
+                                <h2>{{ form.entry.label_tag }}</h2>
+                                <div class="mb-3">
+                                    {{ form.entry }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="container text-center">
+                            <input type="submit" value="Publish Module" class="btn" style="background-color: #9AD86E; width: 200px;">
+                        </div>
+                    </div>
+                </div>
             </form>
         </body>
     {% endif %}
