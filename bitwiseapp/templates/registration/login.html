@@ -11,16 +11,27 @@
 
     <div class="container text-center">
       <h1 class="my-5">LOGIN</h1>
-      <div class="container text-center my-3 bg-light border rounded" style="max-width: 600px;">
+      <div class="container text-center my-3 bg-light border rounded" style="max-width: 500px;">
         <form method="POST" class="lead my-3">
-          {% csrf_token %} {{ form.as_div }}
+          {% csrf_token %}
+          {% for field in form %}
+              <div class="row my-3">
+                  <div class="col-4 text-end">
+                      {{ field.errors }}
+                      {{ field.label_tag }}
+                  </div>
+                  <div class="col-8 d-flex justify-content-center">
+                      {{ field }}
+                  </div>
+              </div>
+          {% endfor %}
           <button type="submit" class="mt-2 btn btn-secondary">Login</button>
         </form>
       </div>
       <div class="container my-4 text-center" style="max-width: 500px;">
         <div class="row">
-          <div class="col"><a href="{% url 'password_reset' %}" class="btn btn-secondary a-log">Reset password</a></div>
-          <div class="col"><a href="{% url 'profile:profile_create' %}" class="btn btn-secondary a-log">Create an account!</a></div>
+          <p><a href="{% url 'password_reset' %}">Reset password</a></p>
+          <p>Are you a new user? <a href="{% url 'profile:profile_create' %}">Sign up</a> now!</p>
         </div>
       </div>
    </div>

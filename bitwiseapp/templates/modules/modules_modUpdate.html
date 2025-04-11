@@ -1,5 +1,16 @@
 {% extends "base.html" %}
 {% block title %}Update Module{% endblock title %} 
+{% block styles %}
+    <style>
+        textarea {
+        display: block;
+        width: 100%;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+                box-sizing: border-box;
+    }
+    </style>
+{% endblock styles %}
 {% block main %} 
     {% if request.user.profile.authorized %} 
         <head>
