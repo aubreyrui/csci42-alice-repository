@@ -1,132 +1,74 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.forms import inlineformset_factory
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib import messages
-from django.urls import reverse
-from django.utils import timezone
-from django.views import generic
-from .models import Quiz, Question, MultipleChoiceOption, QuizAttempt, Answer
-from .forms import QuizForm, QuestionForm, EssayQuestionForm, MultipleChoiceOptionForm
-from django.views.generic.list import ListView
+from django.views.generic import ListView, DetailView
+from django.http import JsonResponse
+from .models import Quiz, Result, Question, Answer
 
+
+# Quiz List view
 class QuizListView(ListView):
     model = Quiz
     template_name = 'quizzes/quiz_list.html'
 
-def take_quiz(request, quiz_id):
-    quiz = get_object_or_404(Quiz, pk=quiz_id)
-    questions = quiz.questions.all()
-    if request.method == 'POST':
-        attempt = QuizAttempt.objects.create(quiz=quiz, user=request.user if request.user.is_authenticated else None, total_questions=questions.count())
+class QuizDetailView(DetailView):
+    model = Quiz
+    template_name = 'quizzes/detail.html'
+
+def quiz_detail_data_view(request, pk):
+    quiz = Quiz.objects.get(pk=pk)
+    questions = []
+    for question in quiz.get_questions:
+        answers = []
+        for answer in question.get_answers:
+            answers.append(answer.text)
+        questions.append({question.text: answers})
+    
+    return JsonResponse({
+        'data': questions,
+        'time': quiz.time
+    })
+
+def save_quiz_view(request, pk):
+    if request.accepts("application/json"):
+        data = request.POST
+        data_ = dict(data.lists())
+        data_.pop('csrfmiddlewaretoken')
+
+        questions = []
+
+        for k in data_.keys():
+            question = Question.objects.get(text=k)
+            questions.append(question)
+
+        user = request.user
+        quiz = Quiz.objects.get(pk=pk)
+
         score = 0
-        for question in questions:
-            answer = None
-            if question.question_type == 'multiple_choice':
-                selected_option_id = request.POST.get(f'question_{question.id}')
-                if selected_option_id:
-                    try:
-                        selected_option = MultipleChoiceOption.objects.get(pk=selected_option_id, question=question)
-                        Answer.objects.create(attempt=attempt, question=question, selected_option=selected_option)
-                        if selected_option.is_correct:
-                            score += 1
-                    except MultipleChoiceOption.DoesNotExist:
-                        Answer.objects.create(attempt=attempt, question=question)
-            elif question.question_type == 'essay':
-                essay_text = request.POST.get(f'essay_{question.id}', '')
-                Answer.objects.create(attempt=attempt, question=question, essay_answer=essay_text)
+        multiplier = 100 / len(questions) 
+        results = []
 
-        attempt.score = score
-        attempt.end_time = timezone.now()
-        attempt.save()
-        return redirect('quiz_results', attempt_id=attempt.id)
-    else:
-        form_dict = {}
-        for question in questions:
-            if question.question_type == 'essay':
-                form_dict[question.id] = EssayQuestionForm(prefix=f'essay_{question.id}')
-        return render(request, 'quizzes/take_quiz.html', {'quiz': quiz, 'questions': questions, 'essay_forms': form_dict})
+        for q in questions:
+            a_selected = data[q.text]
 
-def quiz_results(request, attempt_id):
-    attempt = get_object_or_404(QuizAttempt, pk=attempt_id)
-    answers = Answer.objects.filter(attempt=attempt).select_related('question', 'selected_option')
-    return render(request, 'quizzes/quiz_results.html', {'attempt': attempt, 'answers': answers})
-
-@login_required
-def create_quiz(request):
-    if request.method == 'POST':
-        form = QuizForm(request.POST, request.FILES)
-        if form.is_valid():
-            quiz = form.save(commit=False)
-            quiz.created_by = request.user
-            quiz.save()
-            messages.success(request, 'Quiz created successfully! Now add questions.')
-            return redirect('edit_quiz', quiz_id=quiz.id)
-    else:
-        form = QuizForm()
-    return render(request, 'quizzes/create_quiz.html', {'form': form})
-
-@login_required
-def edit_quiz(request, quiz_id):
-    quiz = get_object_or_404(Quiz, pk=quiz_id)
-    if quiz.created_by != request.user:
-        messages.error(request, 'You are not authorized to edit this quiz.')
-        return redirect('quiz_list')
-
-    QuestionFormSet = inlineformset_factory(
-        Quiz, Question, form=QuestionForm, extra=1, can_delete=True
-    )
-    MultipleChoiceOptionFormSet = inlineformset_factory(
-        Question, MultipleChoiceOption, form=MultipleChoiceOptionForm, extra=2, can_delete=True
-    )
-
-    if request.method == 'POST':
-        quiz_form = QuizForm(request.POST, request.FILES, instance=quiz)
-        question_formset = QuestionFormSet(request.POST, request.FILES, instance=quiz, prefix='questions')
-        mc_option_formset = {}
-        for i, question_form in enumerate(question_formset):
-            if question_form.instance.question_type == 'multiple_choice':
-                mc_option_formset[question_form.instance.id] = MultipleChoiceOptionFormSet(
-                    request.POST, request.FILES, instance=question_form.instance, prefix=f'options_{question_form.instance.id}'
-                )
+            if a_selected != '':
+                correct_answer = Answer.objects.filter(question=q).get(correct=True)
+                if a_selected == correct_answer.text:
+                    score += 1
+                
+                results.append({q.text: {
+                    'correct_answer': correct_answer.text,
+                    'answered': a_selected
+                }})
             else:
-                mc_option_formset[question_form.instance.id] = None # No options for essay
+                results.append({q.text: 'not answered'})
 
-        if quiz_form.is_valid() and question_formset.is_valid() and all(fs is None or fs.is_valid() for fs in mc_option_formset.values()):
-            quiz_form.save()
-            question_formset.save()
-            for fs in mc_option_formset.values():
-                if fs:
-                    fs.save()
-            messages.success(request, 'Quiz updated successfully!')
-            return redirect('quiz_list')
-    else:
-        quiz_form = QuizForm(instance=quiz)
-        question_formset = QuestionFormSet(instance=quiz, prefix='questions')
-        mc_option_formset = {}
-        for question in quiz.questions.all():
-            if question.question_type == 'multiple_choice':
-                mc_option_formset[question.id] = MultipleChoiceOptionFormSet(instance=question, prefix=f'options_{question.id}')
-            else:
-                mc_option_formset[question.id] = None # No options for essay
+        final_score = score * multiplier
 
-    return render(
-        request,
-        'quizzes/edit_quiz.html',
-        {
-            'quiz_form': quiz_form,
-            'question_formset': question_formset,
-            'mc_option_formset': mc_option_formset,
-            'quiz': quiz,
-        },
-    )
-        
-@login_required
-def leaderboard(request):
-    leaderboard_data = (
-        QuizAttempt.objects.filter(user__isnull=False)
-        .values('user__username')
-        .annotate(total_score=models.Sum('score'))
-        .order_by('-total_score')
-    )
-    return render(request, 'quizzes/leaderboard.html', {'leaderboard': leaderboard_data})
+
+        Result.objects.create(quiz=quiz, user=user, score=final_score)
+
+        json_response = {
+            'score': final_score,
+            'correct_questions': score,
+            'results': results
+        }   
+
+        return JsonResponse(json_response)

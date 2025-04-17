@@ -1,13 +1,17 @@
 from django.urls import path
-from .views import edit_quiz, create_quiz, take_quiz, quiz_list, quiz_results, leaderboard
+
+from .views import (
+    QuizListView,
+    QuizDetailView,
+    quiz_detail_data_view,
+    save_quiz_view
+)
 
 urlpatterns = [
-    path('', quiz_list, name='quiz_list'),
-    path('quiz/<int:quiz_id>/take/', take_quiz, name='take_quiz'),
-    path('attempt/<int:attempt_id>/results/', quiz_results, name='quiz_results'),
-    path('create/', create_quiz, name='create_quiz'),
-    path('quiz/<int:quiz_id>/edit/', edit_quiz, name='edit_quiz'),
-    path('leaderboard/', leaderboard, name='leaderboard'),
+    path('', QuizListView.as_view(), name='quiz_list_view'),
+    path('quiz/<pk>', QuizDetailView.as_view(), name='quiz_view'),
+    path('quiz/<pk>/data', quiz_detail_data_view, name='quiz_data_view'),
+    path('quiz/<pk>/save', save_quiz_view, name='quiz_save_view'),
 ]
 
 app_name = 'quizzes'
