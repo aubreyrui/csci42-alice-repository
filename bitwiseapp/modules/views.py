@@ -19,22 +19,33 @@ class CategoryListView(ListView):
 
 def ModuleDetailView(request, pk):
     module = Module.objects.get(pk=pk)
-    form = CommentForm()
+    comment_form = CommentForm()
+    gallery_form = GalleryForm()
 
     if request.method == "POST":
-        form = CommentForm(request.POST, request.FILES)
-        if form.is_valid():
+        comment_form = CommentForm(request.POST, request.FILES)
+        gallery_form = GalleryForm(request.POST, request.FILES)
+        if comment_form.is_valid():
             comment = Comment()
             comment.author = Profile.objects.get(user=request.user)
-            comment.entry = form.cleaned_data.get("entry")
+            comment.entry = comment_form.cleaned_data.get("entry")
             comment.module = Module.objects.get(pk=pk)
             comment.save()
             return redirect("modules:Module", pk=pk)
         
+        if gallery_form.is_valid():
+            gallery = Gallery()
+            gallery.image = gallery_form.cleaned_data.get("image")
+            gallery.module = Module.objects.get(pk=pk)
+            gallery.save()
+            return redirect("modules:Module", pk=pk)
+        
     ctx = {
         "object": module,
-        "form": form,
+        "comment_form": comment_form,
+        "gallery_form": gallery_form,
         "allModules": Module.objects.all(),
+        "images": Gallery.objects.all(),
         "comments": Comment.objects.all(),
     }
 
@@ -69,14 +80,16 @@ class ModuleUpdateView(UpdateView):
                 "pk": self.object.pk
             })
     
-class GalleryCreateView(LoginRequiredMixin, CreateView):
-    model = Gallery
-    template_name = "modules/modules_addGallery.html"
-    def get_success_url(self):
-        return reverse_lazy("modules:Module",
-            kwargs={
-                "pk": self.object.module.pk
-            })
+# class GalleryCreateView(LoginRequiredMixin, CreateView):
+#     model = Gallery
+#     form_class = GalleryForm
+#     template_name = "modules/modules_addGallery.html"
+    
+#     def get_success_url(self):
+#         return reverse_lazy("modules:Module",
+#             kwargs={
+#                 "pk": self.object.module.pk
+#             })
     
 # COMPILER STUFF BELOW THIS POINT
 

@@ -68,11 +68,18 @@ class Comment(models.Model):
         verbose_name = "Comment"
         verbose_name_plural = "Comments"
 
+
 class Gallery(models.Model):
     image = models.ImageField(upload_to="images/", null=True)
+    createdOn = models.DateTimeField(auto_now_add=True, null=True)
     module = models.ForeignKey(
-        Module, on_delete=models.CASCADE, related_name="image"
+        Module,
+        on_delete=models.CASCADE,
+        related_name="image"
     )
     
-    def get_absolute_url(self):
-        return reverse("modules:add_gallery", args=[self.module.pk])
+    class Meta:
+        ordering = ["-createdOn"]
+        unique_together = ["image", "createdOn"]
+        verbose_name = "Image"
+        verbose_name_plural = "Images"

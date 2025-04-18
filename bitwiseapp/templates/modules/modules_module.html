@@ -9,39 +9,69 @@
 
 <div class="container">
 <img src="https://picsum.photos/1000/250" style="width: 100%; max-height: 250px;" class="mb-4">
+
 <h2 class="text-center">{{ object.title }}</h2>
 <p class="text-center text-muted"><i>By {{ object.author }}</i></p>
-<p class="text-center">Published on <strong>{{ object.createdOn }}</strong> | Last edited on <strong>{{ object.updatedOn }}</strong></p>
+
+<p class="text-center">
+    Published on <strong>{{ object.createdOn }}</strong> | 
+    Last edited on <strong>{{ object.updatedOn }}</strong>
+    <br>
+    Lesson on: <strong>{{ object.category }}</strong>
+</p>
 
 <hr>
 
 <p class="mt-4 mb-5">{{ object.entry }}</p>
 
-<h3>More from the author:</h3>
-    <div class="card-group">
-        {% for module in allModules %}
-            {% if module.author == object.author %}
-                <div class="card">
-                    <img class="card-img-top" src="https://picsum.photos/250" alt="Card image cap" style="max-height: 200px;">
-                    <div class="card-body">
-                        <div class="card-title">
-                            <h3>
-                                <a href="{{ module.get_absolute_url }}">{{ module.title }}</a>
-                            </h3>
-                        </div>
-                    </div>
+<!-- GALLERY PHOTOS -->
+
+<div>
+    {% if request.user == object.author.user %}
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ gallery_form.as_div }}
+        <button>Submit</button>
+    </form>
+    {% endif %}
+
+    {% for photo in images %}
+        <img src="{{ photo.image.url }}" style="max-height: 250px;">
+    {% endfor %}
+</div>
+
+<br>
+
+<!-- MORE ON THE TOPIC SECTION -->
+<h3>More related modules:</h3>
+<div class="card-group">
+{% for module in allModules %}
+    {% if module.category == object.category %}
+    {% if module.pk != object.pk %}
+        <div class="card">
+            <img class="card-img-top" src="https://picsum.photos/250" alt="Card image cap" style="max-height: 200px;">
+            <div class="card-body">
+                <div class="card-title">
+                    <h3>
+                        <a href="{{ module.get_absolute_url }}">{{ module.title }}</a>
+                    </h3>
                 </div>
-            {% endif %}
-        {% endfor %}
-    </div>
+            </div>
+        </div>
+    {% endif %}
+    {% endif %}
+{% endfor %}
+</div>
+
 <hr>
 
+<!-- COMMENTS SECTION -->
 <h5>Comments</h5>
 
 {% if request.user.is_authenticated %}
     <form method="POST">
         {% csrf_token %}
-        {{ form.as_div }}
+        {{ comment_form.as_div }}
         <button>Submit</button>
     </form>
 {% endif %}
