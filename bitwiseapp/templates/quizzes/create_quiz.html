@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block scripts %}
+
+
+{% endblock scripts %}
+
+{% block title %}Create Quiz{% endblock title %}
+
+
+{% block content %}
+
+
+<div class="container text-center py-4">
+    <h1 class="">Create Quiz</h1>
+</div>
+
+<form method="post">
+    {% csrf_token %}
+    {{ quiz_form.as_p }}
+    <h2>Questions</h2>
+    {{ question_formset.management_form }}
+    {% for question_form in question_formset %}
+        <h3>Question {{ forloop.counter }}</h3>
+        {{ question_form.as_p }}
+        {# You would likely handle options here, possibly with another nested formset #}
+    {% endfor %}
+    <button type="submit">Create Quiz</button>
+</form>
+
+
+<div class="py-3">
+    <a href="{% url 'quizzes:quiz_list_view' %}" class="btn btn-danger" id="">
+        Go back
+    </a>
+</div>
+
+
+{% endblock content %}

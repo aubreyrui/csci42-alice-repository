@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils import timezone
 from django.contrib.auth.models import User
 
 # Create your models here.
@@ -19,8 +18,8 @@ class Topic(models.Model):
 class Quiz(models.Model):
     name = models.CharField(max_length=60)
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
-    number_of_questions = models.IntegerField(max_length=2)
-    time = models.IntegerChoices(help_text="duration of the quiz in minutes")
+    number_of_questions = models.IntegerField()
+    time = models.IntegerField(help_text="duration of the quiz in minutes")
     image = models.ImageField(null=True, blank=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_time = models.DateTimeField(auto_created=True)

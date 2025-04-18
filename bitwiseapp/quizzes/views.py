@@ -1,7 +1,8 @@
 from django.views.generic import ListView, DetailView
 from django.http import JsonResponse
 from .models import Quiz, Result, Question, Answer
-
+from .forms import QuizForm, QuestionFormSet
+from django.shortcuts import render, redirect
 
 # Quiz List view
 class QuizListView(ListView):
@@ -11,6 +12,20 @@ class QuizListView(ListView):
 class QuizDetailView(DetailView):
     model = Quiz
     template_name = 'quizzes/detail.html'
+
+def create_quiz(request):
+    if request.method == 'POST':
+        quiz_form = QuizForm(request.POST)
+        question_formset = QuestionFormSet(request.POST, instance=quiz) # Assuming you have a Quiz instance
+        if quiz_form.is_valid() and question_formset.is_valid():
+            quiz = quiz_form.save()
+            question_formset.instance = quiz
+            question_formset.save()
+            return redirect('quiz_detail', quiz.id)
+    else:
+        quiz_form = QuizForm()
+        question_formset = QuestionFormSet()
+    return render(request, 'quizzes/create_quiz.html', {'quiz_form': quiz_form, 'question_formset': question_formset})
 
 def quiz_detail_data_view(request, pk):
     quiz = Quiz.objects.get(pk=pk)
