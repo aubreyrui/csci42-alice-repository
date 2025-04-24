@@ -1,8 +1,9 @@
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, CreateView
 from django.http import JsonResponse
 from .models import Quiz, Result, Question, Answer
 from .forms import QuizForm, QuestionFormSet
 from django.shortcuts import render, redirect
+from django.urls import reverse 
 
 # Quiz List view
 class QuizListView(ListView):
@@ -13,10 +14,36 @@ class QuizDetailView(DetailView):
     model = Quiz
     template_name = 'quizzes/detail.html'
 
+# class QuizCreateView(CreateView): 
+#     model = Quiz 
+#     fields = ['name', 'topic', 'number_of_questions', 'time', 'image', 'difficulty']
+
+#     def get_context_data(self, **kwargs): 
+#         data = super().get_context_data(**kwargs) 
+#         if self.request.POST: 
+#             data['questions'] = QuestionFormSet(self.request.POST) 
+#         else: 
+#             data['questions'] = QuestionFormSet()
+
+#     def form_valid(self, form): 
+#         context = self.get_context_data() 
+#         questions = context['questions'] 
+#         self.object = form.save() 
+#         if questions.is_valid(): 
+#             questions.instance = self.object 
+#             questions.save() 
+#         return super().form_valid(form)
+    
+#     def get_success_url(self): 
+#         return reverse('quiz_list_view')
+
+# tried using this reference: https://swapps.com/blog/working-with-nested-forms-with-django/
+    
+
 def create_quiz(request):
     if request.method == 'POST':
         quiz_form = QuizForm(request.POST)
-        question_formset = QuestionFormSet(request.POST, instance=quiz) # Assuming you have a Quiz instance
+        question_formset = QuestionFormSet(request.POST) # Assuming you have a Quiz instance
         if quiz_form.is_valid() and question_formset.is_valid():
             quiz = quiz_form.save()
             question_formset.instance = quiz

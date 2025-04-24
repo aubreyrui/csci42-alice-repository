@@ -35,7 +35,7 @@ class Quiz(models.Model):
     
     @property
     def get_questions(self):
-        return self.question.all()
+        return self.questions.all()
     
     class Meta:
         verbose_name_plural = "Quizzes"
@@ -48,6 +48,10 @@ class Question(models.Model):
 
     def __str__(self):
         return f"{self.pk} - {str(self.text)[:10]}"
+    
+    class Meta: 
+        verbose_name = "Question"
+        verbose_name_plural = "Questions"
     
     @property
     def get_answers(self):

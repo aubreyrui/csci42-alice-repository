@@ -4,7 +4,7 @@
 
 {% block scripts %}
 
-<script src="{% static 'quizzes/quizzes.js' %}" defer></script>
+<script src="{% static 'js/quizzes.js' %}" defer></script>
 
 {% endblock scripts %}
 
@@ -50,7 +50,7 @@
     <button type="button" class="btn btn-link modal-button" data-pk="{{object.pk}}" data-date="{{object.date}}"
         data-name="{{object.name}}" data-description="{{object.description}}" data-topic="{{object.topic.name}}"
         data-questions="{{object.number_of_questions}}" data-difficulty="{{object.difficulty}}"
-        data-time="{{object.time}}" data-pass="{{object.required_score}}" data-bs-toggle="modal"
+        data-time="{{object.time}}" data-bs-toggle="modal"
         data-bs-target="#quizStartModal">
         {{object.name}}
     </button>

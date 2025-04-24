@@ -16,7 +16,6 @@ modalButtons.forEach(Button => Button.addEventListener('click', ()=>{
     const numQuestions = Button.getAttribute('data-questions')
     const difficulty = Button.getAttribute('data-difficulty')
     const time = Button.getAttribute('data-time')
-    const scoreToPass = Button.getAttribute('data-pass')
 
 
     modalBody.innerHTML = `
@@ -32,7 +31,6 @@ modalButtons.forEach(Button => Button.addEventListener('click', ()=>{
                 <li>Topic: <b>${topic}</b></li>
                 <li>Number of questions: <b>${numQuestions}</b></li>
                 <li>Time available: <b>${time} minutes</b></li>
-                <li>Score needed to pass: <b>${scoreToPass} %</b></li>
             </ul> 
         </div>
     
