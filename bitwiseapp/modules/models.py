@@ -77,6 +77,10 @@ class Gallery(models.Model):
         on_delete=models.CASCADE,
         related_name="image"
     )
+
+    def delete(self, *args, **kwargs):
+        self.image.delete()
+        super(Gallery, self).delete(*args, **kwargs)
     
     class Meta:
         ordering = ["-createdOn"]

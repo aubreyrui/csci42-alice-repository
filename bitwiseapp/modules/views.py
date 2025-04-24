@@ -17,6 +17,12 @@ class CategoryListView(ListView):
     model = ModuleCategory
     template_name = "modules/modules_list.html"
 
+@login_required
+def ModuleDeleteView(request, pk):
+    module = Module.objects.get(pk=pk)
+    module.delete()
+    return redirect("modules:ModuleCategory")
+
 def ModuleDetailView(request, pk):
     module = Module.objects.get(pk=pk)
     comment_form = CommentForm()
@@ -52,6 +58,19 @@ def ModuleDetailView(request, pk):
     return render(request, "modules/modules_module.html", ctx)
 
 @login_required
+def CommentDeleteView(request, pk):
+    comment = Comment.objects.get(pk=pk)
+    comment.delete()
+    return redirect("modules:ModuleCategory")
+
+@login_required
+def GalleryDeleteView(request, pk):
+    gallery = Gallery.objects.get(pk=pk)
+    gallery.delete()
+    return redirect("modules:ModuleCategory")
+
+
+@login_required
 def ModuleCreateView(request):
     form = ModuleForm()
 
@@ -80,16 +99,6 @@ class ModuleUpdateView(UpdateView):
                 "pk": self.object.pk
             })
     
-# class GalleryCreateView(LoginRequiredMixin, CreateView):
-#     model = Gallery
-#     form_class = GalleryForm
-#     template_name = "modules/modules_addGallery.html"
-    
-#     def get_success_url(self):
-#         return reverse_lazy("modules:Module",
-#             kwargs={
-#                 "pk": self.object.module.pk
-#             })
     
 # COMPILER STUFF BELOW THIS POINT
 

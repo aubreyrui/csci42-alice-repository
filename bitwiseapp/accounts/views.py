@@ -4,6 +4,9 @@ from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic.edit import CreateView, UpdateView
+from django.contrib.auth import logout as auth_logout, get_user_model
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_http_methods
 
 from .models import Profile
 
@@ -18,7 +21,6 @@ class ProfileUpdateView(UpdateView):
             return super().dispatch(request, *args, **kwargs)
         else:
             return HttpResponseRedirect("/")
-
 
 class ProfileCreateView(CreateView):
     model = User
