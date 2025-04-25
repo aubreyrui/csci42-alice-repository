@@ -26,6 +26,7 @@ urlpatterns = [
     path("profile/", include("accounts.urls", namespace="profile")),
     path("modules/", include("modules.urls", namespace="modules")),
     path("registration/", include("django.contrib.auth.urls")),
+    path("quizzes/", include("quizzes.urls", namespace="quizzes")),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
