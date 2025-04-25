@@ -54,19 +54,20 @@ class QuizDetailView(DetailView):
     
 def create_quiz(request):
     quiz_form = QuizForm()
+
     if request.method == 'POST':
         quiz_form = QuizForm(request.POST, request.FILES)
         if quiz_form.is_valid():
             quiz = Quiz()
             quiz.created_by = Profile.objects.get(user=request.user)
+            quiz.topic = quiz_form.cleaned_data.get("topic")
             quiz.name = quiz_form.cleaned_data.get("name")
-            quiz.category = quiz_form.cleaned_data.get("category")
+            quiz.number_of_questions = quiz_form.cleaned_data.get("number_of_questions")
             quiz.time = quiz_form.cleaned_data.get("time")
             quiz.difficulty = quiz_form.cleaned_data.get("difficulty")
-            quiz = quiz_form.save()
-            return redirect('quiz_detail', quiz.id)
-    else:
-        quiz_form = QuizForm()
+            quiz.save()
+            return redirect('quizzes:quiz_data_view', pk=quiz.pk)
+        
     return render(request, 'quizzes/create_quiz.html', {'quiz_form': quiz_form})
 
 def quiz_detail_data_view(request, pk):

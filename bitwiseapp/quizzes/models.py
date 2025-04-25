@@ -1,5 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.urls import reverse
+from accounts.models import Profile
 
 # Create your models here.
 
@@ -17,13 +18,12 @@ class Topic(models.Model):
 
 class Quiz(models.Model):
     name = models.CharField(max_length=60)
-    topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
+    topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name="quiz")
     number_of_questions = models.IntegerField()
     time = models.IntegerField(help_text="duration of the quiz in minutes")
     image = models.ImageField(null=True, blank=True)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
-    """ created_time = models.DateTimeField(auto_created=True,null=True)
-    updated_time = models.DateTimeField(auto_now_add=True,null=True) """
+    created_by = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="quiz")
+    created_time = models.DateTimeField(auto_now_add=True,null=True)
     difficulty = models.CharField(
         help_text="The difficulty of the quiz",
         max_length=6,
@@ -33,12 +33,16 @@ class Quiz(models.Model):
     def __str__(self):
         return f"{self.name} - {self.topic}"
     
+    def get_absolute_url(self):
+        return reverse("quizzes:quiz_view", args=[self.pk])
+    
     @property
     def get_questions(self):
         return self.questions.all()
     
     class Meta:
         verbose_name_plural = "Quizzes"
+
 
 class Question(models.Model):
     text = models.CharField(max_length=120)
@@ -79,7 +83,7 @@ class Result(models.Model):
     )
 
     user = models.ForeignKey(
-        User,
+        Profile,
         on_delete=models.CASCADE
     )
 

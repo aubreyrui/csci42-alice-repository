@@ -38,7 +38,7 @@ class QuestionForm(forms.ModelForm):
 class QuizForm(forms.ModelForm):
     class Meta:
         model = Quiz
-        fields = ["name", "topic", "number_of_questions", "image", "difficulty", ]
+        fields = ["name", "topic", "number_of_questions", "image", "difficulty", "time" ]
     
 
 AnswerFormSet = inlineformset_factory(Question, Answer, fields=['text', 'correct'], extra=2, can_delete=True)
@@ -90,5 +90,3 @@ class BaseQuestionFormset(BaseInlineFormSet):
                  form.nested.save(commit=commit) 
 
          return result
-    
-
