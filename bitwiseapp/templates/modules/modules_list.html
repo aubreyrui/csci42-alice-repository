@@ -3,9 +3,11 @@
 {% block title %}Bitwise | Module List{% endblock %}
 {% block main %}
     <h1>Modules</h1>
-    <div class="form-group mt-4">
+    <!-- <div class="form-group mt-4">
         <input type="search" class="form-control" id="search" placeholder="Search for a module..." style="max-width: 400px;">
-    </div> 
+        <button type="submit" class="mt-2 btn btn-secondary">Search</button>
+    </div>  -->
+    <hr>
     {% if request.user.is_authenticated %}
         {% if request.user.profile.authorized %}
             <a class="btn btn-secondary mt-4 text-end" href="{% url 'modules:ModuleCreate' %}">Create a module</a>
@@ -17,13 +19,13 @@
                     <div class="row g-0">
                         <div class="col-md-4">
                             {% if category.name == "C++" %}
-                                <img src="{% static 'img/banner_cplusplus.png' %}" class="img-fluid rounded-start" alt="placeholder" style="width: 100%; max-height: 300px;">
+                                <img src="{% static 'img/card_cplusplus.png' %}" class="img-fluid rounded-start" alt="placeholder" style="width: 100%; max-height: 300px;">
                             {% elif category.name == "Web Development" %}
-                                <img src="{% static 'img/banner_webdev.png' %}" class="img-fluid rounded-start" alt="placeholder" style="width: 100%; max-height: 300px;">
+                                <img src="{% static 'img/card_webdev.png' %}" class="img-fluid rounded-start" alt="placeholder" style="width: 100%; max-height: 300px;">
                             {% elif category.name == "Python" %}
-                                <img src="{% static 'img/banner_python.png' %}" class="img-fluid rounded-start" alt="placeholder" style="width: 100%; max-height: 300px;">
+                                <img src="{% static 'img/card_python.png' %}" class="img-fluid rounded-start" alt="placeholder" style="width: 100%; max-height: 300px;">
                             {% else %}
-                                <img src="{% static 'img/banner_python.png' %}" class="img-fluid rounded-start" alt="placeholder" style="width: 100%; max-height: 300px;">
+                                <img src="{% static 'img/card_python.png' %}" class="img-fluid rounded-start" alt="placeholder" style="width: 100%; max-height: 300px;">
                             {% endif %}
                         </div>
                         <div class="col-md-8 d-flex" style="background-color: #D9D9D9;">

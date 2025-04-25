@@ -1,5 +1,9 @@
-from django.views.generic.base import TemplateView
+from django.shortcuts import render
+
+from modules.models import Module
 
 
-class HomepageView(TemplateView):
-    template_name = "index.html"
+def HomepageView(request):
+    modules = Module.objects.all()
+    ctx = {"modules": modules}
+    return render(request, "index.html", ctx)
