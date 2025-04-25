@@ -54,7 +54,27 @@
             </div>
         </div>
         <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
-            Placeholder
+            <div class="row">
+                {% for quiz in quizzes.all %}
+                    <div class="col-md-4"> 
+                        <div class="card my-4 mx-auto">
+                            <div class="row g-0">
+                                <div class="d-flex" style="background-color: #D9D9D9;">
+                                    <div class="card-body align-self-center mx-4">
+                                        <h2 class="card-title"><a href="{{ quiz.get_absolute_url }}">{{ quiz.name }}</a></h2>
+                                        <p class="card-subtitle mb-2 text-muted">By {{ quiz.created_by }}</p>
+                                        <h5>Category: {{ quiz.topic.name }}</h5>
+                                        <h5>Difficulty: {{ quiz.difficulty }}</h5>
+                                        <!-- <div class="card-body">
+                                            <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe explicabo a suscipit impedit maiores dolorum similique nesciunt mollitia, omnis quaerat sed delectus quos aut id repudiandae magnam error! Odio nisi natus repellat nulla a fugiat aperiam quam dolores necessitatibus distinctio quaerat labore aut, qui odit eum eveniet nihil quis quasi.</p>
+                                        </div>  -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>    
+                {% endfor %}
+            </div>
         </div>
         </div>
     </div>

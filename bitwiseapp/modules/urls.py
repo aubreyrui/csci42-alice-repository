@@ -1,9 +1,17 @@
 from django.urls import path
 
-from .views import CategoryListView, ModuleDetailView, ModuleCreateView, ModuleUpdateView
-from .views import ModuleDeleteView, CommentDeleteView, GalleryDeleteView
-from .views import Execute, Compiler, Compile
-
+from .views import (
+    CategoryListView,
+    CommentDeleteView,
+    Compile,
+    Compiler,
+    Execute,
+    GalleryDeleteView,
+    ModuleCreateView,
+    ModuleDeleteView,
+    ModuleDetailView,
+    ModuleUpdateView,
+)
 
 urlpatterns = [
     path("list/", CategoryListView.as_view(), name="ModuleCategory"),
@@ -13,7 +21,7 @@ urlpatterns = [
     path("lesson/<int:pk>/delete", ModuleDeleteView, name="ModuleDelete"),
     path("lesson/<int:pk>/comment/delete", CommentDeleteView, name="CommentDelete"),
     path("lesson/<int:pk>/gallery/delete", GalleryDeleteView, name="GalleryDelete"),
-    path("compiler", Compiler, name="Compiler"), 
+    path("compiler", Compiler, name="Compiler"),
     path("compiler/run", Compile, name="RunCode"),
 ]
 
