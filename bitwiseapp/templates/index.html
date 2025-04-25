@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Bitwise{% endblock %}
+{% block main %}
+    {% if request.user.is_authenticated %}
+        <h1>Welcome to Bitwise, <a href="{% url 'profile:profile_update' request.user.profile.pk %}">{{ request.user.profile.display_name }}</a>!</h1>
+        <form action="{% url 'logout'%}" method="POST">
+            {% csrf_token %}
+            <button type="submit">LOG OUT</button>
+        </form>
+    {% else %}
+        <h1>Welcome to Bitwise! Would you like to <a href="{% url 'login' %}">log-in</a>?</h1>
+    {% endif %}
+
+    <hr>
+    <ul class="nav nav-pills mt-2" id="myTab" role="tablist">
+        <li class="nav-item " role="presentation">
+            <button class="nav-link n-btn active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Modules</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Quizzes</button>
+        </li>
+    </ul>
+    <div class="tab-content container text-center" id="myTabContent">
+        <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+            <div class="row">
+                {% for module in modules.all %}
+                    <div class="col-md-4"> 
+                        <div class="card my-4 mx-auto">
+                            <div class="row g-0">
+                                {% if module.category.name == "C++" %}
+                                    <img src="{% static 'img/card_cplusplus.png' %}" class="img-fluid rounded-start" alt="placeholder" style="width: 100%; max-height: 300px;">
+                                {% elif module.category.name == "Web Development" %}
+                                    <img src="{% static 'img/card_webdev.png' %}" class="img-fluid rounded-start" alt="placeholder" style="width: 100%; max-height: 300px;">
+                                {% elif module.category.name == "Python" %}
+                                    <img src="{% static 'img/card_python.png' %}" class="img-fluid rounded-start" alt="placeholder" style="width: 100%; max-height: 300px;">
+                                {% else %}
+                                    <img src="{% static 'img/card_python.png' %}" class="img-fluid rounded-start" alt="placeholder" style="width: 100%; max-height: 300px;">
+                                {% endif %}
+                                <div class="d-flex" style="background-color: #D9D9D9;">
+                                    <div class="card-body align-self-center mx-4">
+                                        <h2 class="card-title"><a href="{{ module.get_absolute_url }}">{{ module.title }}</a></h2>
+                                        <p class="card-subtitle mb-2 text-muted">By {{ module.author }}</p>
+                                        <h5>Category: {{ module.category.name }}</h5>
+                                        <!-- <div class="card-body">
+                                            <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe explicabo a suscipit impedit maiores dolorum similique nesciunt mollitia, omnis quaerat sed delectus quos aut id repudiandae magnam error! Odio nisi natus repellat nulla a fugiat aperiam quam dolores necessitatibus distinctio quaerat labore aut, qui odit eum eveniet nihil quis quasi.</p>
+                                        </div>  -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>    
+                {% endfor %}
+            </div>
+        </div>
+        <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+            <div class="row">
+                {% for quiz in quizzes.all %}
+                    <div class="col-md-4"> 
+                        <div class="card my-4 mx-auto">
+                            <div class="row g-0">
+                                <div class="d-flex" style="background-color: #D9D9D9;">
+                                    <div class="card-body align-self-center mx-4">
+                                        <h2 class="card-title"><a href="{{ quiz.get_absolute_url }}">{{ quiz.name }}</a></h2>
+                                        <p class="card-subtitle mb-2 text-muted">By {{ quiz.created_by }}</p>
+                                        <h5>Category: {{ quiz.topic.name }}</h5>
+                                        <h5>Difficulty: {{ quiz.difficulty }}</h5>
+                                        <!-- <div class="card-body">
+                                            <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe explicabo a suscipit impedit maiores dolorum similique nesciunt mollitia, omnis quaerat sed delectus quos aut id repudiandae magnam error! Odio nisi natus repellat nulla a fugiat aperiam quam dolores necessitatibus distinctio quaerat labore aut, qui odit eum eveniet nihil quis quasi.</p>
+                                        </div>  -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>    
+                {% endfor %}
+            </div>
+        </div>
+        </div>
+    </div>
+{% endblock %}

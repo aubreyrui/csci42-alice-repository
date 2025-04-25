@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Create Module{% endblock title %} 
+{% block main %} 
+    {% if request.user.profile.authorized %} 
+        <head>
+            <h1>Module Maker</h1>
+        </head>
+        <body>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form }}
+            </form>
+        </body>
+    {% endif %}
+{% endblock main %} 

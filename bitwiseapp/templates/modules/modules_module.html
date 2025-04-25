@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ object.title }}{% endblock %}
+{% block main %}
+
+<a class="btn btn-secondary mb-4 text-end" href="{% url 'bitwise:index' %}">Back to Home</a>
+{% if request.user == object.author.user %}
+    <a class="btn btn-secondary mb-4 text-end" href="{% url 'modules:ModuleUpdate' pk=object.pk %}">Update the Module</a>
+{% endif %}
+
+<div class="container">
+
+{% if object.category.name == "C++" %}
+    <img src="{% static 'img/banner_cplusplus.png' %}" style="width: 100%; max-height: 250px;" class="mb-4">
+{% elif object.category.name == "Web Development" %}
+    <img src="{% static 'img/banner_webdev.png' %}" style="width: 100%; max-height: 250px;" class="mb-4">
+{% elif object.category.name == "Python" %}
+    <img src="{% static 'img/banner_python.png' %}" style="width: 100%; max-height: 250px;" class="mb-4">
+{% else %}
+    <img src="{% static 'img/banner_python.png' %}" style="width: 100%; max-height: 250px;" class="mb-4">
+{% endif %}
+
+<h2 class="text-center">{{ object.title }}</h2>
+<p class="text-center text-muted"><i>By {{ object.author }}</i></p>
+
+<p class="text-center">
+    Published on <strong>{{ object.createdOn }}</strong> | 
+    Last edited on <strong>{{ object.updatedOn }}</strong>
+    <br>
+    Lesson on: <strong>{{ object.category }}</strong>
+</p>
+
+<hr>
+
+<p class="mt-4 mb-5">{{ object.entry|linebreaks }}</p>
+
+<!-- GALLERY PHOTOS -->
+
+<div>
+    <h2>GALLERY</h2>
+
+    {% if request.user == object.author.user %}
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ gallery_form.as_div }}
+        <button>Submit</button>
+    </form>
+    {% endif %}
+    {% for photo in images %}
+        {% if photo.module == object %}
+            <img src="{{ photo.image.url }}" style="max-height: 250px;">
+            {% if request.user == object.author.user %}
+                <a href="{% url 'modules:GalleryDelete' pk=photo.pk %}" class="btn" style="background-color: #eb4646;">Delete Image</a>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+</div>
+
+<br>
+
+<!-- MORE ON THE TOPIC SECTION -->
+<h3>More related modules:</h3>
+<div class="card-group">
+{% for module in allModules %}
+    {% if module.category == object.category %}
+    {% if module.pk != object.pk %}
+        <div class="card">
+            {% if module.category.name == "C++" %}
+                <img src="{% static 'img/banner_cplusplus.png' %}" style="width: 100%; max-height: 250px;" class="mb-4">
+            {% elif module.category.name == "Web Development" %}
+                <img src="{% static 'img/banner_webdev.png' %}" style="width: 100%; max-height: 250px;" class="mb-4">
+            {% elif module.category.name == "Python" %}
+                <img src="{% static 'img/banner_python.png' %}" style="width: 100%; max-height: 250px;" class="mb-4">
+            {% else %}
+                <img src="https://picsum.photos/1000/250" style="width: 100%; max-height: 250px;" class="mb-4">
+            {% endif %}
+            <div class="card-body">
+                <div class="card-title">
+                    <h3>
+                        <a href="{{ module.get_absolute_url }}">{{ module.title }}</a>
+                        <p>From: {{ module.author }}</p>
+                    </h3>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    {% endif %}
+{% endfor %}
+</div>
+
+<hr>
+
+<!-- COMMENTS SECTION -->
+<h5>Comments</h5>
+
+{% if request.user.is_authenticated %}
+    <form method="POST">
+        {% csrf_token %}
+        {{ comment_form.as_div }}
+        <button>Submit</button>
+    </form>
+{% endif %}
+
+<ul class="list-group list-group-flush mt-4">
+{% for comment in comments %}
+    <li class="list-group-item">
+        {% if comment.module == object %}
+            <p class="mb-0"><strong>{{ comment.author }}</strong></p>
+            <small class="text-secondary">Commented at {{ comment.createdOn }} | Edited at {{ comment.updatedOn }}</small>
+            {% if request.user == comment.author.user or object.author.user %}
+                <a href="{% url 'modules:CommentDelete' pk=comment.pk %}" class="btn" style="background-color: #eb4646;">Delete</a>
+            {% endif %}
+            <p>{{ comment.entry|linebreaks }}</p>
+        {% endif %} 
+    </li>
+{% endfor %}
+</ul>
+
+{% if not request.user.is_authenticated %}
+
+    <form method="POST" action="{% url 'login' %}">
+        {% csrf_token %}
+        <button type="submit">LOG IN</button>
+    </form>
+
+{% endif %}
+</div>
+{% endblock %}

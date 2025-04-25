@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}
+Bitwise | Update Profile
+{% endblock title %}
+
+{% block main %}
+<h1>Profile Information</h1>
+<hr />
+<p>Username: {{ request.user.username }}</p>
+<form method="POST">
+  {% csrf_token %} {{ form.as_p }}
+  <input type="submit" value="Update" />
+</form>
+<a href="{% url 'bitwise:index' %}">Go to homepage</a>
+
+{% endblock main %}
