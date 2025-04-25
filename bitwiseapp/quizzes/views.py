@@ -1,9 +1,12 @@
-from django.views.generic import ListView, DetailView, CreateView
-from django.http import JsonResponse
+from django.views.generic import ListView, DetailView, CreateView, FormView
+from django.http import JsonResponse, HttpResponseRedirect
 from .models import Quiz, Result, Question, Answer
-from .forms import QuizForm, QuestionFormSet
+from .forms import QuizForm, QuestionFormSet, BaseQuestionFormset
 from django.shortcuts import render, redirect
 from django.urls import reverse 
+from django.views.generic.detail import SingleObjectMixin
+from django.contrib import messages
+from accounts.models import Profile
 
 # Quiz List view
 class QuizListView(ListView):
@@ -14,45 +17,57 @@ class QuizDetailView(DetailView):
     model = Quiz
     template_name = 'quizzes/detail.html'
 
-# class QuizCreateView(CreateView): 
-#     model = Quiz 
-#     fields = ['name', 'topic', 'number_of_questions', 'time', 'image', 'difficulty']
+""" class QuizCreateView(CreateView): 
+     model = Quiz 
+     fields = ['name', 'topic', 'number_of_questions', 'time', 'image', 'difficulty']
+     template_name = "quizzes/create_quiz.html"
+     def get_success_url(self): 
+         return reverse('quiz_list_view') """
+     
+""" class QuizCreateUpdate(SingleObjectMixin, FormView):
+    model = Quiz
+    template_name = "quizzes/quiz_update.html"
 
-#     def get_context_data(self, **kwargs): 
-#         data = super().get_context_data(**kwargs) 
-#         if self.request.POST: 
-#             data['questions'] = QuestionFormSet(self.request.POST) 
-#         else: 
-#             data['questions'] = QuestionFormSet()
-
-#     def form_valid(self, form): 
-#         context = self.get_context_data() 
-#         questions = context['questions'] 
-#         self.object = form.save() 
-#         if questions.is_valid(): 
-#             questions.instance = self.object 
-#             questions.save() 
-#         return super().form_valid(form)
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object(queryset=Quiz.objects.all())
+        return super().get(request, *args, **kwargs)
     
-#     def get_success_url(self): 
-#         return reverse('quiz_list_view')
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object(queryset=Quiz.objects.all())
+        return super().post(self, request, *args, **kwargs)
+    
+    def get_form(self, form_class=None):
+        return BaseQuestionFormset(
+            **self.get_form_kwargs(), instance=self.object
+        )
+    
+    def form_valid(self, form):
+        form.save()
+        messages.add_message(self.request, messages.SUCCESS, "Changes were saved.")
+        return HttpResponseRedirect(self.get_success_url())
+    
+    def get_success_url(self):
+        return reverse('quizzes:quiz_detail', kwargs={"pk": self.object.pk})
 
+ """
 # tried using this reference: https://swapps.com/blog/working-with-nested-forms-with-django/
     
-
 def create_quiz(request):
+    quiz_form = QuizForm()
     if request.method == 'POST':
-        quiz_form = QuizForm(request.POST)
-        question_formset = QuestionFormSet(request.POST) # Assuming you have a Quiz instance
-        if quiz_form.is_valid() and question_formset.is_valid():
+        quiz_form = QuizForm(request.POST, request.FILES)
+        if quiz_form.is_valid():
+            quiz = Quiz()
+            quiz.created_by = Profile.objects.get(user=request.user)
+            quiz.name = quiz_form.cleaned_data.get("name")
+            quiz.category = quiz_form.cleaned_data.get("category")
+            quiz.time = quiz_form.cleaned_data.get("time")
+            quiz.difficulty = quiz_form.cleaned_data.get("difficulty")
             quiz = quiz_form.save()
-            question_formset.instance = quiz
-            question_formset.save()
             return redirect('quiz_detail', quiz.id)
     else:
         quiz_form = QuizForm()
-        question_formset = QuestionFormSet()
-    return render(request, 'quizzes/create_quiz.html', {'quiz_form': quiz_form, 'question_formset': question_formset})
+    return render(request, 'quizzes/create_quiz.html', {'quiz_form': quiz_form})
 
 def quiz_detail_data_view(request, pk):
     quiz = Quiz.objects.get(pk=pk)

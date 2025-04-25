@@ -18,13 +18,6 @@
 <form method="post">
     {% csrf_token %}
     {{ quiz_form.as_p }}
-    <h2>Questions</h2>
-    {{ question_formset.management_form }}
-    {% for question_form in question_formset %}
-        <h3>Question {{ forloop.counter }}</h3>
-        {{ question_form.as_p }}
-        {# You would likely handle options here, possibly with another nested formset #}
-    {% endfor %}
     <button type="submit">Create Quiz</button>
 </form>
 

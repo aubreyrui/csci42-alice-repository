@@ -22,8 +22,8 @@ class Quiz(models.Model):
     time = models.IntegerField(help_text="duration of the quiz in minutes")
     image = models.ImageField(null=True, blank=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
-    created_time = models.DateTimeField(auto_created=True)
-    updated_time = models.DateTimeField(auto_now_add=True)
+    """ created_time = models.DateTimeField(auto_created=True,null=True)
+    updated_time = models.DateTimeField(auto_now_add=True,null=True) """
     difficulty = models.CharField(
         help_text="The difficulty of the quiz",
         max_length=6,
