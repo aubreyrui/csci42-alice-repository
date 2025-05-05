@@ -3,7 +3,7 @@
 {% block title %}Bitwise{% endblock %}
 {% block main %}
     {% if request.user.is_authenticated %}
-        <h1>Welcome to Bitwise, <a href="{% url 'profile:profile_update' request.user.profile.pk %}">{{ request.user.profile.display_name }}</a>!</h1>
+        <h1>Welcome to Bitwise, {{ request.user.profile.display_name }}!</h1>
         <form action="{% url 'logout'%}" method="POST">
             {% csrf_token %}
             <button type="submit">LOG OUT</button>

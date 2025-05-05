@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Bitwise | Python Editor{% endblock %}
+{% block styles %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.css">
+    <style>
+        #codearea,
+        *, *:after, *:before {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        section {
+            position: relative;
+            padding: 2.5rem 0;
+        }
+
+        .container {
+            position: relative;
+            margin: 2.5% 0% 0% 0%;
+            padding: 0 20px;
+            width: 100%;
+            max-width: 970px;
+        }
+
+        section:after, .container:after, .row:after {
+            display: table;
+            content: '';
+            clear: both;
+        }
+
+        .code-container {
+            position: relative;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+            border-radius: 3px;
+            box-shadow: 3px 3px 6px rgba(0, 0, 0, .3);
+        }
+
+        .code-container:last-child {
+            margin-bottom: 0;
+        }
+
+        textarea {
+            width: 100%; 
+        }
+    </style>
+{% endblock %}
+{% block main %}
+    <h1>Python Code Editor</h1>
+    <hr>
+
+    <div class="container mx-auto">
+        <form action="/modules/compiler/python/run" method="post">
+            {% csrf_token %}
+            <div class="code-container">
+                <textarea id="codearea" name="codearea" rows="10" >{{ code }}</textarea>
+            </div>
+            <hr>
+            <div>
+                <h3><label for="output">Output</label></h3>
+                <br>
+                <textarea id="output" name="output" width="100%" height="500px" rows="10" disabled style="border: 5px solid gray">{{ output }}</textarea>
+            </div>
+            <br>
+            <button type="submit" class="mt-2 btn btn-secondary">Run Code</button>
+        </form>
+    </div>
+
+{% endblock  %}
+{% block scripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/mode/python/python.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        // $(document).ready(function () {
+        //     var url = window.location;
+        //     $('ul.nav a').filter(function() {
+        //         return this.href != url;
+        //     }).removeClass('active');
+
+        //     $('ul.nav a').filter(function() {
+        //         return this.href == url;
+        //     }).addClass('active');
+        // });
+        
+        var codeEditor = CodeMirror.fromTextArea(document.getElementById("codearea"), {
+            mode: "python",
+            lineNumbers: true,
+            indentUnit: 4,
+            extraKeys: { Tab: "indentMore", "Shift-Tab": "indentLess" },
+        });
+    </script>
+{% endblock %}

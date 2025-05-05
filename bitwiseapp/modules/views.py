@@ -121,19 +121,6 @@ def SearchResultsView(request):
     }
     
     return render(request, 'modules/modules_search.html', ctx)
-    
-
-# class SearchResultsView(ListView):
-#     model = Module
-#     template_name = 'modules/modules_search.html'
-    
-#     def get_queryset(self):
-#         searching = self.request.GET.get("searching")
-
-#         object_list = Module.objects.filter(title__contains=searching)
-
-#         return object_list
-
 
 # COMPILER STUFF BELOW THIS POINT
 
@@ -151,17 +138,25 @@ def Execute(code):
     return output
 
 
-def Compiler(request):
+def PythonCompiler(request):
+    return render(request, "modules/modules_python.html")
+
+
+def WebCompiler(request): 
+    return render(request, "modules/modules_web.html")
+
+
+def CodeRedirect(request): 
     return render(request, "modules/modules_code.html")
 
 
-def Compile(request):
+def PythonCompile(request):
     if request.method == "POST":
         codeareadata = request.POST["codearea"]
         output = Execute(codeareadata)
         return render(
             request,
-            "modules/modules_code.html",
+            "modules/modules_python.html",
             {"code": codeareadata, "output": output},
         )
     return HttpResponse("Method not allowed", status=405)
