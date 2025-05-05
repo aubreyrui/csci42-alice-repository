@@ -20,9 +20,13 @@ class QuizListView(ListView):
     model = Quiz
     template_name = 'quizzes/quiz_list.html'
 
-class QuizDetailView(DetailView):
+class QuizInfoDetailView(DetailView):
     model = Quiz
     template_name = 'quizzes/quiz_info.html'
+
+class QuizAnswerView(DetailView):
+    model = Quiz
+    template_name = 'quizzes/detail.html'
     
 def create_quiz(request):
     quiz_form = QuizForm()
@@ -123,7 +127,7 @@ def quiz_update(request, quiz_id, *args, **kwargs):
         }
         return render(request, 'quizzes/quiz_update.html', context)
     
-def quiz_detail(request, quiz_id): # For running the quiz
+def quiz_detail(request, quiz_id):
     quiz = get_object_or_404(Quiz, pk=quiz_id)
     questions = Question.objects.filter(quiz=quiz)
     context = {
@@ -162,6 +166,7 @@ def save_quiz_view(request, pk):
             questions.append(question)
 
         user = request.user
+        profile = get_object_or_404(Profile, user=user)
         quiz = Quiz.objects.get(pk=pk)
 
         score = 0
@@ -186,7 +191,7 @@ def save_quiz_view(request, pk):
         final_score = score * multiplier
 
 
-        Result.objects.create(quiz=quiz, user=user, score=final_score)
+        Result.objects.create(quiz=quiz, user=profile, score=final_score)
 
         json_response = {
             'score': final_score,

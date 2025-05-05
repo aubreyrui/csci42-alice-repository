@@ -2,7 +2,8 @@ from django.urls import path
 
 from .views import (
     QuizListView,
-    QuizDetailView,
+    QuizAnswerView,
+    QuizInfoDetailView,
     quiz_detail_data_view,
     save_quiz_view,
     create_quiz,
@@ -14,8 +15,8 @@ from .views import (
 
 urlpatterns = [
     path('', QuizListView.as_view(), name='quiz_list_view'),
-    path('quiz/<pk>', QuizDetailView.as_view(), name='quiz_view'),
-    path('quiz/<quiz_id>/answer', quiz_detail, name="quiz_answer"), # for answering the quiz
+    path('quiz/<pk>/info', QuizInfoDetailView.as_view(), name='quiz_view'),
+    path('quiz/<pk>', QuizAnswerView.as_view(), name="quiz_answer"), # for answering the quiz
     path('quiz/<pk>/data', quiz_detail_data_view, name='quiz_data_view'), # for checking data before implementation for quiz
     path('quiz/<pk>/save', save_quiz_view, name='quiz_save_view'),
     path('create', create_quiz, name="create_quiz_view"),

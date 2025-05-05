@@ -46,7 +46,7 @@
 {% endif %}
 
 <div class="py-3">
-    <a href="{% url 'quizzes:quiz_answer' quiz_id=object.pk %}" class="btn btn-danger" id="">
+    <a href="{% url 'quizzes:quiz_answer' pk=object.pk %}" class="btn btn-danger" id="">
         Take Quiz
     </a>
 </div>
