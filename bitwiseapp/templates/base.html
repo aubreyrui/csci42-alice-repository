@@ -18,16 +18,16 @@
                 <div class="d-flex flex-sm-column flex-row flex-nowrap bg-secondary align-items-center sticky-top">
                     <ul class="nav nav-pills nav-flush flex-sm-column flex-row flex-nowrap mb-auto mx-auto text-center align-items-center">
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="{% url 'bitwise:index' %}" id="index"><i class="bi bi-house fs-1"></i></a>
+                            <a class="nav-link {% if '/home' in request.path %}active{% endif %}" aria-current="page" href="{% url 'bitwise:index' %}" id="index"><i class="bi bi-house fs-1"></i></a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'modules:ModuleCategory' %}" id="module"><i class="bi bi-file-earmark-richtext fs-1"></i></a>
+                            <a class="nav-link {% if '/modules/list/' in request.path %}active{% endif %}" href="{% url 'modules:ModuleCategory' %}" id="module"><i class="bi bi-file-earmark-richtext fs-1"></i></a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url  'quizzes:quiz_list_view' %}" id="code"><i class="bi bi-file-binary fs-1"></i></a>
+                            <a class="nav-link {% if '/quizzes' in request.path %}active{% endif %}" href="{% url  'quizzes:quiz_list_view' %}" id="code"><i class="bi bi-file-binary fs-1"></i></a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url  'modules:Compiler' %}" id="code"><i class="bi bi-pc-display-horizontal fs-1"></i></a>
+                            <a class="nav-link {% if '/modules/compiler' in request.path %}active{% endif %}" href="{% url  'modules:Compiler' %}" id="code"><i class="bi bi-pc-display-horizontal fs-1"></i></a>
                         </li>
                     </ul> 
                 </div>

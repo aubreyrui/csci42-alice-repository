@@ -1,5 +1,5 @@
 /* Active/current link */
-.nav-item a.active {
+.nav-item .active {
   background-color: #ba4747 !important;
   color: white !important;
 }
