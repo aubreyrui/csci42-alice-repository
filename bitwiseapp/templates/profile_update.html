@@ -7,11 +7,34 @@ Bitwise | Update Profile
 {% block main %}
 <h1>Profile Information</h1>
 <hr />
-<p>Username: {{ request.user.username }}</p>
-<form method="POST">
+<p> </p>
+<!-- <form method="POST">
   {% csrf_token %} {{ form.as_p }}
   <input type="submit" value="Update" />
-</form>
-<a href="{% url 'bitwise:index' %}">Go to homepage</a>
+</form> -->
+<div class="container text-center my-3 bg-light border rounded" style="max-width: 700px;">
+  <div class="row my-3">
+    <div class="col-4 text-end"><h3>Username:</h3></div>
+    <div class="col-8 d-flex justify-content-center"><h3>{{ request.user.username }}</h3></div>
+  </div>
+  <form method="POST" class="lead my-3">
+    {% csrf_token %}
+    {% for field in form %}
+        <div class="row my-3">
+            <div class="col-4 text-end">
+                {{ field.errors }}
+                <h3>{{ field.label_tag }}</h3>
+            </div>
+            <div class="col-8 d-flex justify-content-center">
+                {{ field }}
+            </div>
+        </div>
+    {% endfor %}
+    <button type="submit" class="mt-2 btn btn-secondary" value="Update">Update</button>
+  </form>
+</div>
+<footer class="login-alters">
+  <a href="{% url 'bitwise:index' %}" class="btn btn-secondary a-log">Go to homepage</a>
+</footer>
 
 {% endblock main %}

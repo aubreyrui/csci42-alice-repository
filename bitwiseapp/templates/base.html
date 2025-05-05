@@ -17,6 +17,11 @@
             <div class="sidebar col-12 col-sm-2 col-xl-1 px-0 bg-secondary d-flex sticky-top justify-content-center" style="padding-left: .5rem !important;">
                 <div class="d-flex flex-sm-column flex-row flex-nowrap bg-secondary align-items-center sticky-top">
                     <ul class="nav nav-pills nav-flush flex-sm-column flex-row flex-nowrap mb-auto mx-auto text-center align-items-center">
+                        {% if request.user.is_authenticated %}
+                            <li class="nav-item">
+                                <a class="nav-link {% if '/profile' in request.path %}active{% endif %}" aria-current="page" href="{% url 'profile:profile_update' request.user.profile.pk %}" id="index"><i class="bi bi-person-circle fs-1"></i></a>
+                            </li>
+                        {% endif %}
                         <li class="nav-item">
                             <a class="nav-link {% if '/home' in request.path %}active{% endif %}" aria-current="page" href="{% url 'bitwise:index' %}" id="index"><i class="bi bi-house fs-1"></i></a>
                         </li>
