@@ -3,13 +3,13 @@ from contextlib import redirect_stdout
 from io import StringIO
 
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import UpdateView
 from django.views.generic.list import ListView
 
+from django.db.models import Q
 from accounts.models import Profile
 
 from .forms import CommentForm, GalleryForm, ModuleForm
@@ -107,6 +107,32 @@ class ModuleUpdateView(UpdateView):
 
     def get_success_url(self):
         return reverse_lazy("modules:Module", kwargs={"pk": self.object.pk})
+
+def SearchResultsView(request):
+    if request.method == "POST":
+        searching = request.POST['searching']
+        searched = Module.objects.filter(
+            Q(title__contains=searching) | Q(category__name__contains=searching)
+        )
+
+    ctx = {
+        "searching": searching,
+        "searched": searched,
+    }
+    
+    return render(request, 'modules/modules_search.html', ctx)
+    
+
+# class SearchResultsView(ListView):
+#     model = Module
+#     template_name = 'modules/modules_search.html'
+    
+#     def get_queryset(self):
+#         searching = self.request.GET.get("searching")
+
+#         object_list = Module.objects.filter(title__contains=searching)
+
+#         return object_list
 
 
 # COMPILER STUFF BELOW THIS POINT

@@ -13,33 +13,43 @@
             <a class="btn btn-secondary mt-4 text-end" href="{% url 'modules:ModuleCreate' %}">Create a module</a>
         {% endif %}
     {% endif %}
+
+    <div>
+        <form class="d-flex" action="{% url 'modules:ModuleSearch' %}" method="POST">
+            {% csrf_token %}
+            <input class="form-control me-2" name="searching" type="search" placeholder="Search...">
+            <button class="btn btn-outline-secondary" type="submit">Search</button>
+        </form>
+    </div>
+
     {% for category in object_list %}
-            {% for lesson in category.modules.all %}
-                <div class="card my-4 mx-auto" style="max-width: 1200px;">
-                    <div class="row g-0">
-                        <div class="col-md-4">
-                            {% if category.name == "C++" %}
-                                <img src="{% static 'img/card_cplusplus.png' %}" class="img-fluid rounded-start" alt="placeholder" style="width: 100%; max-height: 300px;">
-                            {% elif category.name == "Web Development" %}
-                                <img src="{% static 'img/card_webdev.png' %}" class="img-fluid rounded-start" alt="placeholder" style="width: 100%; max-height: 300px;">
-                            {% elif category.name == "Python" %}
-                                <img src="{% static 'img/card_python.png' %}" class="img-fluid rounded-start" alt="placeholder" style="width: 100%; max-height: 300px;">
-                            {% else %}
-                                <img src="{% static 'img/card_python.png' %}" class="img-fluid rounded-start" alt="placeholder" style="width: 100%; max-height: 300px;">
-                            {% endif %}
-                        </div>
-                        <div class="col-md-8 d-flex" style="background-color: #D9D9D9;">
-                            <div class="card-body align-self-center mx-4">
-                                <h2 class="card-title"><a href="{{ lesson.get_absolute_url }}">{{ lesson.title }}</a></h2>
-                                <p class="card-subtitle mb-2 text-muted">By {{ lesson.author }}</p>
-                                <h5>Category: {{ category.name }}</h5>
-                                <!-- <div class="card-body">
-                                    <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe explicabo a suscipit impedit maiores dolorum similique nesciunt mollitia, omnis quaerat sed delectus quos aut id repudiandae magnam error! Odio nisi natus repellat nulla a fugiat aperiam quam dolores necessitatibus distinctio quaerat labore aut, qui odit eum eveniet nihil quis quasi.</p>
-                                </div>  -->
-                            </div>
+        
+        {% for lesson in category.modules.all %}
+            <div class="card my-4 mx-auto" style="max-width: 1200px;">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        {% if category.name == "C++" %}
+                            <img src="{% static 'img/card_cplusplus.png' %}" class="img-fluid rounded-start" alt="placeholder" style="width: 100%; max-height: 300px;">
+                        {% elif category.name == "Web Development" %}
+                            <img src="{% static 'img/card_webdev.png' %}" class="img-fluid rounded-start" alt="placeholder" style="width: 100%; max-height: 300px;">
+                        {% elif category.name == "Python" %}
+                            <img src="{% static 'img/card_python.png' %}" class="img-fluid rounded-start" alt="placeholder" style="width: 100%; max-height: 300px;">
+                        {% else %}
+                            <img src="{% static 'img/card_python.png' %}" class="img-fluid rounded-start" alt="placeholder" style="width: 100%; max-height: 300px;">
+                        {% endif %}
+                    </div>
+                    <div class="col-md-8 d-flex" style="background-color: #D9D9D9;">
+                        <div class="card-body align-self-center mx-4">
+                            <h2 class="card-title"><a href="{{ lesson.get_absolute_url }}">{{ lesson.title }}</a></h2>
+                            <p class="card-subtitle mb-2 text-muted">By {{ lesson.author }}</p>
+                            <h5>Category: {{ category.name }}</h5>
+                            <!-- <div class="card-body">
+                                <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Saepe explicabo a suscipit impedit maiores dolorum similique nesciunt mollitia, omnis quaerat sed delectus quos aut id repudiandae magnam error! Odio nisi natus repellat nulla a fugiat aperiam quam dolores necessitatibus distinctio quaerat labore aut, qui odit eum eveniet nihil quis quasi.</p>
+                            </div>  -->
                         </div>
                     </div>
-                </div>  
-            {% endfor %}
+                </div>
+            </div>  
+        {% endfor %}
     {% endfor %}
 {% endblock  %}
