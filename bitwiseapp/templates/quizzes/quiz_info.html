@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block scripts %}
+
+
+{% endblock scripts %}
+
+{% block title %}Quiz: {{ object.name }} {% endblock title %}
+
+{% block main %}
+
+<div class="container text-center py-4">
+    <h1 class="">Quiz Info</h1>
+</div>
+
+
+<div class="container">
+    {% if object.category.name == "C++" %}
+    <img src="{% static 'img/banner_cplusplus.png' %}" style="width: 100%; max-height: 250px;" class="mb-4">
+{% elif object.category.name == "Web Development" %}
+    <img src="{% static 'img/banner_webdev.png' %}" style="width: 100%; max-height: 250px;" class="mb-4">
+{% elif object.category.name == "Python" %}
+    <img src="{% static 'img/banner_python.png' %}" style="width: 100%; max-height: 250px;" class="mb-4">
+{% else %}
+    <img src="{% static 'img/banner_python.png' %}" style="width: 100%; max-height: 250px;" class="mb-4">
+{% endif %}
+</div>
+
+<h2 class="text=center">
+    {{ object.title }}
+</h2>
+<img src="{{ photo.image.url }}" style="max-height: 250px;">
+<p class="text-left">
+    Topic: {{ object.topic }}
+    <br>
+    Time to answer: {{ object.time }}
+</p>
+
+{% if request.user == object.created_by.user %}
+<div class="py-3">
+    <a href="{% url 'quizzes:quiz_update' pk=object.pk %}" class="btn btn-danger" id="">
+        Update Quiz/Add Questions
+    </a>
+</div>
+{% endif %}
+
+<div class="py-3">
+    <a href="{% url 'quizzes:quiz_list_view' %}" class="btn btn-danger" id="">
+        Go back
+    </a>
+</div>
+
+
+{% endblock main %}

@@ -1,12 +1,16 @@
 from django.views.generic import ListView, DetailView, CreateView, FormView
 from django.http import JsonResponse, HttpResponseRedirect
 from .models import Quiz, Result, Question, Answer
-from .forms import QuizForm, QuestionFormSet, BaseQuestionFormset
-from django.shortcuts import render, redirect
+from .forms import QuizForm, QuestionForm, AnswerForm
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse 
 from django.views.generic.detail import SingleObjectMixin
 from django.contrib import messages
 from accounts.models import Profile
+from django.forms import formset_factory
+
+AnswerFormSet = formset_factory(AnswerForm, extra=4, can_delete=True) #changed from inlineformset_factory
+
 
 # Quiz List view
 class QuizListView(ListView):
@@ -15,42 +19,7 @@ class QuizListView(ListView):
 
 class QuizDetailView(DetailView):
     model = Quiz
-    template_name = 'quizzes/detail.html'
-
-""" class QuizCreateView(CreateView): 
-     model = Quiz 
-     fields = ['name', 'topic', 'number_of_questions', 'time', 'image', 'difficulty']
-     template_name = "quizzes/create_quiz.html"
-     def get_success_url(self): 
-         return reverse('quiz_list_view') """
-     
-""" class QuizCreateUpdate(SingleObjectMixin, FormView):
-    model = Quiz
-    template_name = "quizzes/quiz_update.html"
-
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object(queryset=Quiz.objects.all())
-        return super().get(request, *args, **kwargs)
-    
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object(queryset=Quiz.objects.all())
-        return super().post(self, request, *args, **kwargs)
-    
-    def get_form(self, form_class=None):
-        return BaseQuestionFormset(
-            **self.get_form_kwargs(), instance=self.object
-        )
-    
-    def form_valid(self, form):
-        form.save()
-        messages.add_message(self.request, messages.SUCCESS, "Changes were saved.")
-        return HttpResponseRedirect(self.get_success_url())
-    
-    def get_success_url(self):
-        return reverse('quizzes:quiz_detail', kwargs={"pk": self.object.pk})
-
- """
-# tried using this reference: https://swapps.com/blog/working-with-nested-forms-with-django/
+    template_name = 'quizzes/quiz_info.html'
     
 def create_quiz(request):
     quiz_form = QuizForm()
@@ -66,9 +35,70 @@ def create_quiz(request):
             quiz.time = quiz_form.cleaned_data.get("time")
             quiz.difficulty = quiz_form.cleaned_data.get("difficulty")
             quiz.save()
-            return redirect('quizzes:quiz_data_view', pk=quiz.pk)
+            return redirect('quizzes:quiz_view', pk=quiz.pk)
         
     return render(request, 'quizzes/create_quiz.html', {'quiz_form': quiz_form})
+
+def quiz_update(request, pk,  *args, **kwargs):
+    """
+    View for updating a quiz, including its questions and answers.
+    """
+    quiz = get_object_or_404(Quiz, pk=pk)
+
+    if request.method == 'POST':
+        # Process the question form
+        question_form = QuestionForm(request.POST) #removed instance
+        answer_formset = AnswerFormSet(request.POST)
+
+        if question_form.is_valid() and answer_formset.is_valid():
+            # Create a new question and associate it with the quiz
+            question = question_form.save(commit=False)
+            question.quiz = quiz
+            question.save() # Save the question *before* saving answers
+
+            # Save the answers, associating them with the new question
+            for form in answer_formset:
+                if form.cleaned_data:  # Only save if the form isn't empty
+                    answer = form.save(commit=False)
+                    answer.question = question
+                    answer.save()
+
+            # Handle deleted answers
+            for deleted_form in answer_formset.deleted_forms:
+                if deleted_form.cleaned_data:
+                    deleted_form.instance.delete()
+
+            return redirect('quizzes/quiz_detail', quiz_id=quiz.id)  # Redirect to quiz detail view
+        else:
+            #If forms are invalid, pass them back to the template
+             context = {
+                'quiz': quiz,
+                'question_form': question_form,
+                'answer_formset': answer_formset,
+            }
+             return render(request, 'quizzes/quiz_update.html', context)
+    else:
+        # If it's a GET request, initialize the forms.  This is crucial for *editing*
+        # existing questions and answers.
+        question_form = QuestionForm() #initialize a blank question form
+        answer_formset = AnswerFormSet()
+
+        context = {
+            'quiz': quiz,
+            'question_form': question_form,
+            'answer_formset': answer_formset,
+        }
+        return render(request, 'quizzes/quiz_update.html', context)
+    
+def quiz_detail(request, quiz_id):
+    quiz = get_object_or_404(Quiz, pk=quiz_id)
+    questions = Question.objects.filter(quiz=quiz)
+    context = {
+        'quiz': quiz,
+        'questions': questions,
+    }
+    return render(request, 'quiz_detail.html', context)
+
 
 def quiz_detail_data_view(request, pk):
     quiz = Quiz.objects.get(pk=pk)
@@ -130,3 +160,40 @@ def save_quiz_view(request, pk):
         }   
 
         return JsonResponse(json_response)
+    
+
+
+""" class QuizCreateView(CreateView): 
+     model = Quiz 
+     fields = ['name', 'topic', 'number_of_questions', 'time', 'image', 'difficulty']
+     template_name = "quizzes/create_quiz.html"
+     def get_success_url(self): 
+         return reverse('quiz_list_view') """
+     
+""" class QuizCreateUpdate(SingleObjectMixin, FormView):
+    model = Quiz
+    template_name = "quizzes/quiz_update.html"
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object(queryset=Quiz.objects.all())
+        return super().get(request, *args, **kwargs)
+    
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object(queryset=Quiz.objects.all())
+        return super().post(self, request, *args, **kwargs)
+    
+    def get_form(self, form_class=None):
+        return BaseQuestionFormset(
+            **self.get_form_kwargs(), instance=self.object
+        )
+    
+    def form_valid(self, form):
+        form.save()
+        messages.add_message(self.request, messages.SUCCESS, "Changes were saved.")
+        return HttpResponseRedirect(self.get_success_url())
+    
+    def get_success_url(self):
+        return reverse('quizzes:quiz_detail', kwargs={"pk": self.object.pk})
+
+ """
+# tried using this reference: https://swapps.com/blog/working-with-nested-forms-with-django/

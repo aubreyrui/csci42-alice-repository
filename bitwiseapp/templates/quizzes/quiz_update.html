@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block scripts %}
+
+{% endblock scripts %}
+
+{% block title %}Update Quiz{% endblock title %}
+
+{% block main %}
+{% if request.user.profile.authorized %}
+  <h1>Update Quiz: {{ quiz.title }}</h1>
+
+  <form method="post">
+    {% csrf_token %}
+
+    <h2>Questions</h2>
+    {{ question_form.as_p }}  {# Display the question form #}
+
+    <h2>Answers</h2>
+    {{ answer_formset.management_form }}  {# Required for formsets #}
+    {% for form in answer_formset %}
+      <div class="answer-form">
+        {{ form.as_p }}
+      </div>
+    {% endfor %}
+
+    <button type="submit">Update Quiz</button>
+  </form>
+
+  <a href="{% url 'quizzes:quiz_view' pk=object.pk %}">Back to Quiz Detail</a>
+
+<div class="py-3">
+    <a href="{% url 'quizzes:quiz_list_view' %}" class="btn btn-danger" id="">
+        Go back
+    </a>
+</div>
+
+{% endif %}
+{% endblock main %}
