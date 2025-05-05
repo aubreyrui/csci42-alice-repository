@@ -25,6 +25,11 @@ class AnswerForm(forms.ModelForm):
             'text': 'Answer Text',
             'correct': 'Is this the correct answer?',
         }
+        def __init__(self, *args, **kwargs): # added __init__
+            super().__init__(*args, **kwargs)
+            self.fields['text'].widget.attrs.update({'class': 'form-control'})
+            self.fields['correct'].widget.attrs.update({'class': 'form-check-input'}) # added is_correct
+            
 
 class QuizForm(forms.ModelForm):
     class Meta:

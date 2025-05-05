@@ -1,4 +1,4 @@
-from django.views.generic import ListView, DetailView, CreateView, FormView
+from django.views.generic import ListView, DetailView
 from django.http import JsonResponse, HttpResponseRedirect
 from .models import Quiz, Result, Question, Answer
 from .forms import QuizForm, QuestionForm, AnswerFormSet, get_question_formset
@@ -7,7 +7,13 @@ from django.urls import reverse
 from django.views.generic.detail import SingleObjectMixin
 from django.contrib import messages
 from accounts.models import Profile
-from django.forms import formset_factory, modelformset_factory
+from django.db import transaction
+from django.core import serializers
+import logging
+
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 # Quiz List view
 class QuizListView(ListView):
@@ -32,16 +38,22 @@ def create_quiz(request):
             quiz.time = quiz_form.cleaned_data.get("time")
             quiz.difficulty = quiz_form.cleaned_data.get("difficulty")
             quiz.save()
+            
             return redirect('quizzes:quiz_view', pk=quiz.pk)
         
     return render(request, 'quizzes/create_quiz.html', {'quiz_form': quiz_form})
 
 # for deleting answer
-
 def answer_delete(request, answer_id):
     answer = Answer.objects.get(pk=answer_id)
     answer.delete()
-    return redirect('quizzes/quiz_update')
+    return redirect('quizzes:quiz_update')
+
+# for deleting question
+def question_delete(request, question_id):
+    question = Question.objects.get(pk=question_id)
+    question.delete()
+    return redirect('quizzes:quiz_update')
 
 # for updating questions and answers
 def quiz_update(request, quiz_id, *args, **kwargs):
@@ -57,29 +69,38 @@ def quiz_update(request, quiz_id, *args, **kwargs):
 
         if question_formset.is_valid() and answer_formset.is_valid():
             saved_questions = []
-            for question_form in question_formset:
-                if question_form.cleaned_data and question_form.instance and not question_form.cleaned_data.get('DELETE', False):
-                    question_form.save() # Save the existing question
-                    saved_questions.append(question_form.instance)
-            
-            for question_form in question_formset:
-                if question_form.cleaned_data and not question_form.cleaned_data.get('DELETE', False):
-                    question = question_form.save(commit=False)
-                    question.quiz = quiz
-                    question.save()
-                    saved_questions.append(question)
-                    """ for answer_form in answer_formset:
+            with transaction.atomic():
+                # 1. Save existing questions first
+                for question_form in question_formset:
+                    if question_form.cleaned_data and question_form.instance and not question_form.cleaned_data.get('DELETE', False):
+                        question = question_form.save()  # Save the existing question
+                        saved_questions.append(question.instance)  # add to saved list
+
+                # 2. Handle new questions
+                for question_form in question_formset:
+                    if question_form.cleaned_data and not question_form.instance and not question_form.cleaned_data.get('DELETE', False):
+                        if question_form.cleaned_data and not question_form.instance and not question_form.cleaned_data.get('DELETE', False):
+                            instance = question_form.save(commit=False)
+                            logger.debug(f"Quiz ID: {quiz.id}")  # Debug: Check quiz ID
+                            instance.quiz = quiz
+                            logger.debug(f"New Question Quiz ID: {instance.quiz_id}") # Debug: Check new_question.quiz_id
+                            instance.save()  # Save the new question to get an ID
+                            logger.debug(f"New Question ID: {instance.id}")  # Debug: Check new question ID after saving
+                            saved_questions.append(instance)  # add to saved list
+                            question = instance # added
+
+                    # 3.  Save answers for each question.
+                    for answer_form in answer_formset:
                         if answer_form.cleaned_data and not answer_form.cleaned_data.get('DELETE', False):
                             answer = answer_form.save(commit=False)
                             answer.question = question
-                            answer.save() """
+                            answer.save()
 
             # Handle deleted questions
             for deleted_question_form in question_formset.deleted_forms:
                 if deleted_question_form.cleaned_data and deleted_question_form.instance:
                     deleted_question_form.instance.delete()
-
-            return redirect('quizzes/quiz_view', quiz_id=quiz.pk)
+            return redirect('quizzes/quiz_info.html', pk=quiz_id)
 
         else:
             context = {
@@ -109,7 +130,7 @@ def quiz_detail(request, quiz_id): # For running the quiz
         'quiz': quiz,
         'questions': questions,
     }
-    return render(request, 'quizzes/quiz_detail.html', context)
+    return render(request, 'quizzes/detail.html', context)
 
 
 # gets the detail of quiz in JSON (for checking purposes)

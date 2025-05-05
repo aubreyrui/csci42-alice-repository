@@ -46,6 +46,12 @@
 {% endif %}
 
 <div class="py-3">
+    <a href="{% url 'quizzes:quiz_answer' quiz_id=object.pk %}" class="btn btn-danger" id="">
+        Take Quiz
+    </a>
+</div>
+
+<div class="py-3">
     <a href="{% url 'quizzes:quiz_list_view' %}" class="btn btn-danger" id="">
         Go back
     </a>

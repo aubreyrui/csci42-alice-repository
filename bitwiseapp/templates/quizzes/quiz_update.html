@@ -35,10 +35,10 @@
     <h2>Questions</h2>
         {{ question_formset.management_form }}
         {% for question_form in question_formset %}
+        <h2>Question {{ forloop.counter }}</h2>
         <div class="question-form">
           {{ question_form.as_p }}
           {{ question_form.id }}  {# Important for identifying existing questions for deletion #}
-          {{ question_form.DELETE }} {# Checkbox for deleting existing questions #}
           <button type="button" class="delete-question-btn" data-form-prefix="{{ question_form.prefix }}">Delete Question</button>
 
           <h3>Answers for Question {{ forloop.counter }}</h3>
@@ -46,7 +46,7 @@
               {% for answer in question_form.instance.answers.all %}
                   <div class="answer-form">
                       <p>Answer Text: {{ answer.text }}</p>
-                      <p>Is Correct: {{ answer.is_correct }}</p>
+                      <p>Is Correct: {{ answer.correct }}</p>
                   </div>
               {% endfor %}
           {% endif %}
