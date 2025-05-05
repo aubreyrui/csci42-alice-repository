@@ -36,23 +36,27 @@
 
 <!-- GALLERY PHOTOS -->
 
-<div>
+<div class="row">
     <h2>GALLERY</h2>
 
     {% if request.user == object.author.user %}
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         {{ gallery_form.as_div }}
-        <button>Submit</button>
+        <button class="mt-2 btn btn-secondary">Submit</button>
     </form>
     {% endif %}
     {% for photo in images %}
         {% if photo.module == object %}
+        <div class="col-md-4">
+            <div class="card my-4 mx-auto">
             <img src="{{ photo.image.url }}" style="max-height: 250px;">
             {% if request.user == object.author.user %}
                 <a href="{% url 'modules:GalleryDelete' pk=photo.pk %}" class="btn" style="background-color: #eb4646;">Delete Image</a>
             {% endif %}
         {% endif %}
+            </div>
+        </div>
     {% endfor %}
 </div>
 
@@ -94,11 +98,14 @@
 <h5>Comments</h5>
 
 {% if request.user.is_authenticated %}
-    <form method="POST">
+<div class="container bg-light">
+    <form method="POST" class="py-3">
         {% csrf_token %}
-        {{ comment_form.as_div }}
-        <button>Submit</button>
+        {{ comment_form.entry.errors }}
+        {{ comment_form.entry}}
+        <button class="mt-2 btn btn-secondary">Submit</button>
     </form>
+</div>
 {% endif %}
 
 <ul class="list-group list-group-flush mt-4">
@@ -108,6 +115,7 @@
             <p class="mb-0"><strong>{{ comment.author }}</strong></p>
             <small class="text-secondary">Commented at {{ comment.createdOn }} | Edited at {{ comment.updatedOn }}</small>
             {% if request.user == comment.author.user or object.author.user %}
+            <br>
                 <a href="{% url 'modules:CommentDelete' pk=comment.pk %}" class="btn" style="background-color: #eb4646;">Delete</a>
             {% endif %}
             <p>{{ comment.entry|linebreaks }}</p>

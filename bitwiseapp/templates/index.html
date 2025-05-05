@@ -6,7 +6,7 @@
         <h1>Welcome to Bitwise, {{ request.user.profile.display_name }}!</h1>
         <form action="{% url 'logout'%}" method="POST">
             {% csrf_token %}
-            <button type="submit">LOG OUT</button>
+            <button type="submit" class="btn btn-secondary">LOG OUT</button>
         </form>
     {% else %}
         <h1>Welcome to Bitwise! Would you like to <a href="{% url 'login' %}">log-in</a>?</h1>
