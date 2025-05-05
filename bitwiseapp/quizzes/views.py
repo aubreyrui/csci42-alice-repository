@@ -1,16 +1,13 @@
 from django.views.generic import ListView, DetailView, CreateView, FormView
 from django.http import JsonResponse, HttpResponseRedirect
 from .models import Quiz, Result, Question, Answer
-from .forms import QuizForm, QuestionForm, AnswerForm
+from .forms import QuizForm, QuestionForm, AnswerFormSet, get_question_formset
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse 
 from django.views.generic.detail import SingleObjectMixin
 from django.contrib import messages
 from accounts.models import Profile
-from django.forms import formset_factory
-
-AnswerFormSet = formset_factory(AnswerForm, extra=4, can_delete=True) #changed from inlineformset_factory
-
+from django.forms import formset_factory, modelformset_factory
 
 # Quiz List view
 class QuizListView(ListView):
@@ -39,67 +36,83 @@ def create_quiz(request):
         
     return render(request, 'quizzes/create_quiz.html', {'quiz_form': quiz_form})
 
-def quiz_update(request, pk,  *args, **kwargs):
-    """
-    View for updating a quiz, including its questions and answers.
-    """
-    quiz = get_object_or_404(Quiz, pk=pk)
+# for deleting answer
+
+def answer_delete(request, answer_id):
+    answer = Answer.objects.get(pk=answer_id)
+    answer.delete()
+    return redirect('quizzes/quiz_update')
+
+# for updating questions and answers
+def quiz_update(request, quiz_id, *args, **kwargs):
+    quiz = get_object_or_404(Quiz, pk=quiz_id)
+    existing_question_count = quiz.questions.count()
+    remaining_slots = max(0, quiz.number_of_questions - existing_question_count)
+    
+    QuestionFormSet = get_question_formset(extra=remaining_slots, can_delete=True)
 
     if request.method == 'POST':
-        # Process the question form
-        question_form = QuestionForm(request.POST) #removed instance
+        question_formset = QuestionFormSet(request.POST)
         answer_formset = AnswerFormSet(request.POST)
 
-        if question_form.is_valid() and answer_formset.is_valid():
-            # Create a new question and associate it with the quiz
-            question = question_form.save(commit=False)
-            question.quiz = quiz
-            question.save() # Save the question *before* saving answers
+        if question_formset.is_valid() and answer_formset.is_valid():
+            saved_questions = []
+            for question_form in question_formset:
+                if question_form.cleaned_data and question_form.instance and not question_form.cleaned_data.get('DELETE', False):
+                    question_form.save() # Save the existing question
+                    saved_questions.append(question_form.instance)
+            
+            for question_form in question_formset:
+                if question_form.cleaned_data and not question_form.cleaned_data.get('DELETE', False):
+                    question = question_form.save(commit=False)
+                    question.quiz = quiz
+                    question.save()
+                    saved_questions.append(question)
+                    """ for answer_form in answer_formset:
+                        if answer_form.cleaned_data and not answer_form.cleaned_data.get('DELETE', False):
+                            answer = answer_form.save(commit=False)
+                            answer.question = question
+                            answer.save() """
 
-            # Save the answers, associating them with the new question
-            for form in answer_formset:
-                if form.cleaned_data:  # Only save if the form isn't empty
-                    answer = form.save(commit=False)
-                    answer.question = question
-                    answer.save()
+            # Handle deleted questions
+            for deleted_question_form in question_formset.deleted_forms:
+                if deleted_question_form.cleaned_data and deleted_question_form.instance:
+                    deleted_question_form.instance.delete()
 
-            # Handle deleted answers
-            for deleted_form in answer_formset.deleted_forms:
-                if deleted_form.cleaned_data:
-                    deleted_form.instance.delete()
+            return redirect('quizzes/quiz_view', quiz_id=quiz.pk)
 
-            return redirect('quizzes/quiz_detail', quiz_id=quiz.id)  # Redirect to quiz detail view
         else:
-            #If forms are invalid, pass them back to the template
-             context = {
+            context = {
                 'quiz': quiz,
-                'question_form': question_form,
+                'question_formset': question_formset,
                 'answer_formset': answer_formset,
+                'max_questions': quiz.number_of_questions,
             }
-             return render(request, 'quizzes/quiz_update.html', context)
+            return render(request, 'quizzes/quiz_update.html', context)
     else:
-        # If it's a GET request, initialize the forms.  This is crucial for *editing*
-        # existing questions and answers.
-        question_form = QuestionForm() #initialize a blank question form
+        initial_question_data = quiz.questions.all()
+        QuestionFormSet = get_question_formset(extra=remaining_slots, can_delete=True)
+        question_formset = QuestionFormSet(queryset=initial_question_data)        
         answer_formset = AnswerFormSet()
-
         context = {
             'quiz': quiz,
-            'question_form': question_form,
+            'question_formset': question_formset,
             'answer_formset': answer_formset,
+            'max_questions': quiz.number_of_questions,
         }
         return render(request, 'quizzes/quiz_update.html', context)
     
-def quiz_detail(request, quiz_id):
+def quiz_detail(request, quiz_id): # For running the quiz
     quiz = get_object_or_404(Quiz, pk=quiz_id)
     questions = Question.objects.filter(quiz=quiz)
     context = {
         'quiz': quiz,
         'questions': questions,
     }
-    return render(request, 'quiz_detail.html', context)
+    return render(request, 'quizzes/quiz_detail.html', context)
 
 
+# gets the detail of quiz in JSON (for checking purposes)
 def quiz_detail_data_view(request, pk):
     quiz = Quiz.objects.get(pk=pk)
     questions = []
@@ -114,6 +127,7 @@ def quiz_detail_data_view(request, pk):
         'time': quiz.time
     })
 
+# saves the responses
 def save_quiz_view(request, pk):
     if request.accepts("application/json"):
         data = request.POST

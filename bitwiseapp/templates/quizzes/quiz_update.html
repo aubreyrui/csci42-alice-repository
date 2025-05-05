@@ -3,38 +3,70 @@
 
 {% block scripts %}
 
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const deleteQuestionButtons = document.querySelectorAll('.delete-question-btn');
+
+      deleteQuestionButtons.forEach(button => {
+          button.addEventListener('click', function() {
+              const formPrefix = this.dataset.formPrefix;
+              const deleteCheckbox = document.querySelector(`#id_${formPrefix}-DELETE`);
+              const questionFormDiv = this.closest('.question-form');
+
+              if (deleteCheckbox && questionFormDiv) {
+                  deleteCheckbox.checked = true;
+                  questionFormDiv.style.display = 'none';
+              }
+          });
+      });
+  });
+</script>
+
 {% endblock scripts %}
 
 {% block title %}Update Quiz{% endblock title %}
 
 {% block main %}
-{% if request.user.profile.authorized %}
   <h1>Update Quiz: {{ quiz.title }}</h1>
 
   <form method="post">
     {% csrf_token %}
 
     <h2>Questions</h2>
-    {{ question_form.as_p }}  {# Display the question form #}
+        {{ question_formset.management_form }}
+        {% for question_form in question_formset %}
+        <div class="question-form">
+          {{ question_form.as_p }}
+          {{ question_form.id }}  {# Important for identifying existing questions for deletion #}
+          {{ question_form.DELETE }} {# Checkbox for deleting existing questions #}
+          <button type="button" class="delete-question-btn" data-form-prefix="{{ question_form.prefix }}">Delete Question</button>
 
-    <h2>Answers</h2>
-    {{ answer_formset.management_form }}  {# Required for formsets #}
-    {% for form in answer_formset %}
-      <div class="answer-form">
-        {{ form.as_p }}
-      </div>
-    {% endfor %}
+          <h3>Answers for Question {{ forloop.counter }}</h3>
+          {% if question_form.instance.pk %}  {# Check if the question instance has a primary key #}
+              {% for answer in question_form.instance.answers.all %}
+                  <div class="answer-form">
+                      <p>Answer Text: {{ answer.text }}</p>
+                      <p>Is Correct: {{ answer.is_correct }}</p>
+                  </div>
+              {% endfor %}
+          {% endif %}
+          {{ answer_formset.management_form }}
+          {% for answer_form in answer_formset %}
+              <div class="answer-form">
+                  {{ answer_form.as_p }}
+              </div>
+          {% endfor %}
+        </div>
+        {% endfor %}
 
     <button type="submit">Update Quiz</button>
   </form>
 
-  <a href="{% url 'quizzes:quiz_view' pk=object.pk %}">Back to Quiz Detail</a>
+  <a href="{% url 'quizzes:quiz_view' pk=quiz.pk %}">Back to Quiz Detail</a>
 
 <div class="py-3">
     <a href="{% url 'quizzes:quiz_list_view' %}" class="btn btn-danger" id="">
         Go back
     </a>
 </div>
-
-{% endif %}
 {% endblock main %}

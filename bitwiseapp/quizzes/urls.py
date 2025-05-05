@@ -7,7 +7,8 @@ from .views import (
     save_quiz_view,
     create_quiz,
     quiz_detail,
-    quiz_update
+    quiz_update,
+    answer_delete
 )
 
 urlpatterns = [
@@ -17,7 +18,8 @@ urlpatterns = [
     path('quiz/<pk>/data', quiz_detail_data_view, name='quiz_data_view'),
     path('quiz/<pk>/save', save_quiz_view, name='quiz_save_view'),
     path('create', create_quiz, name="create_quiz_view"),
-    path('quiz/<pk>/update', quiz_update, name='quiz_update')
+    path('quiz/<quiz_id>/update', quiz_update, name='quiz_update'),
+    path('quiz/answer_delete/<answer_id>', answer_delete, name='answer_delete'),
 ]
 
 app_name = 'quizzes'

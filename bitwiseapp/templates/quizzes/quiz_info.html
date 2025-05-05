@@ -39,7 +39,7 @@
 
 {% if request.user == object.created_by.user %}
 <div class="py-3">
-    <a href="{% url 'quizzes:quiz_update' pk=object.pk %}" class="btn btn-danger" id="">
+    <a href="{% url 'quizzes:quiz_update' quiz_id=object.pk %}" class="btn btn-danger" id="">
         Update Quiz/Add Questions
     </a>
 </div>

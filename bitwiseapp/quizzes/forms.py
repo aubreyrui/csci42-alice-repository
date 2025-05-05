@@ -1,5 +1,6 @@
 from django import forms
-from django.forms.models import inlineformset_factory, BaseInlineFormSet
+from django.forms.models import inlineformset_factory
+from django.forms import formset_factory, modelformset_factory
 from .models import Quiz, Question, Answer
 
 class QuestionForm(forms.ModelForm):
@@ -7,7 +8,7 @@ class QuestionForm(forms.ModelForm):
         model = Question
         fields = ['text', 'image',]
         widgets = {
-            'text': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
+            'text': forms.Textarea(attrs={'rows': 2, 'class': 'form-control'}),
         }
         labels = {
             'text': 'Question Text',
@@ -18,7 +19,7 @@ class AnswerForm(forms.ModelForm):
         model = Answer
         fields = ['text', 'correct']
         widgets = {
-            'text': forms.Textarea(attrs={'rows': 2, 'class': 'form-control'}),
+            'text': forms.Textarea(attrs={'rows': 1, 'class': 'form-control'}),
         }
         labels = {
             'text': 'Answer Text',
@@ -30,13 +31,7 @@ class QuizForm(forms.ModelForm):
         model = Quiz
         fields = ["name", "topic", "number_of_questions", "image", "difficulty", "time" ]
     
+def get_question_formset(extra=1, can_delete=True):
+    return modelformset_factory(Question, form=QuestionForm, extra=extra, can_delete=can_delete)
 
-AnswerFormSet = forms.inlineformset_factory(
-    Question,  # Parent model
-    Answer,    # Child model
-    form=AnswerForm,
-    extra=4,      # Number of empty forms to display initially.  Make this configurable!
-    can_delete=True, # Allow deleting existing answers
-)
-
-AnswerFormSet = inlineformset_factory(Question, Answer, fields=['text', 'correct'], extra=2, can_delete=True)
+AnswerFormSet = formset_factory(AnswerForm, extra=4, can_delete=True)
