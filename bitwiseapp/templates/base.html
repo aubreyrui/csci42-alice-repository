@@ -23,10 +23,10 @@
                             </li>
                         {% endif %}
                         <li class="nav-item">
-                            <a class="nav-link {% if '/home' in request.path %}active{% endif %}" aria-current="page" href="{% url 'bitwise:index' %}" id="index"><i class="bi bi-house fs-1"></i></a>
+                            <a class="nav-link {% if '/home' in request.path or request.path == '/' %}active{% endif %}" aria-current="page" href="{% url 'bitwise:index' %}" id="index"><i class="bi bi-house fs-1"></i></a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {% if '/modules/list/' in request.path %}active{% endif %}" href="{% url 'modules:ModuleCategory' %}" id="module"><i class="bi bi-file-earmark-richtext fs-1"></i></a>
+                            <a class="nav-link {% if '/modules/list/' in request.path or '/modules/search' in request.path %}active{% endif %}" href="{% url 'modules:ModuleCategory' %}" id="module"><i class="bi bi-file-earmark-richtext fs-1"></i></a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {% if '/quizzes' in request.path %}active{% endif %}" href="{% url  'quizzes:quiz_list_view' %}" id="code"><i class="bi bi-file-binary fs-1"></i></a>
