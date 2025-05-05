@@ -32,7 +32,7 @@
                             <a class="nav-link {% if '/quizzes' in request.path %}active{% endif %}" href="{% url  'quizzes:quiz_list_view' %}" id="code"><i class="bi bi-file-binary fs-1"></i></a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {% if '/modules/compiler' in request.path %}active{% endif %}" href="{% url  'modules:Compiler' %}" id="code"><i class="bi bi-pc-display-horizontal fs-1"></i></a>
+                            <a class="nav-link {% if '/modules/code/' in request.path %}active{% endif %}" href="{% url  'modules:Code' %}" id="code"><i class="bi bi-pc-display-horizontal fs-1"></i></a>
                         </li>
                     </ul> 
                 </div>

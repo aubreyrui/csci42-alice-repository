@@ -125,17 +125,25 @@ def Execute(code):
     return output
 
 
-def Compiler(request):
+def PythonCompiler(request):
+    return render(request, "modules/modules_python.html")
+
+
+def WebCompiler(request): 
+    return render(request, "modules/modules_web.html")
+
+
+def CodeRedirect(request): 
     return render(request, "modules/modules_code.html")
 
 
-def Compile(request):
+def PythonCompile(request):
     if request.method == "POST":
         codeareadata = request.POST["codearea"]
         output = Execute(codeareadata)
         return render(
             request,
-            "modules/modules_code.html",
+            "modules/modules_python.html",
             {"code": codeareadata, "output": output},
         )
     return HttpResponse("Method not allowed", status=405)
